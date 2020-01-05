@@ -12,7 +12,8 @@
 		"cmake.useCMakeServer": false,
 		"files.associations": {
 			"cura-plain-settings.h": "c",
-			"json-glib.h": "c"
+			"json-glib.h": "c",
+			"grect.h": "c"
 		},
 	}
 }

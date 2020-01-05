@@ -1,12 +1,21 @@
 #pragma once
 
-struct _CP_APP_SETTINGS {
-    const char *mainAppTitle;
-    GdkRectangle   rcMainApp;
+#include "grect.h"
+
+enum _AppSettingsFields {
+    CP_PROP_APP_TITLE = 1,
+    CP_PROP_APP_RECT,
 };
 
-typedef struct _CP_APP_SETTINGS   CP_APP_SETTINGS;
-typedef struct _CP_APP_SETTINGS *PCP_APP_SETTINGS;
+struct _AppSettings {
+    GObject  parent;
+    gchar *appTitle;
+    GRect  *appRect;
+};
 
-PCP_APP_SETTINGS appSettings(void);
-PCP_APP_SETTINGS initAppSettings(void);
+typedef struct _AppSettings   AppSettings;
+typedef struct _AppSettings *PAppSettings;
+
+PAppSettings appSettings(void);
+void appSettingsFree(void);
+void appSettingSave(void);

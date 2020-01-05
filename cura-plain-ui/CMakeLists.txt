@@ -19,4 +19,4 @@ file(GLOB_RECURSE C_SRCS *.c)
 
 add_executable(${PROJECT_NAME} "${C_SRCS} ${CXX_SRCS}")
 
-target_link_libraries(${PROJECT_NAME} ${GTK3_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${GTK3_LIBRARIES} ${JSONGLIB_LIBRARIES})
