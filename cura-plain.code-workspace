@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cmake.configureArgs": [
+			"-Wno-dev"
+		],
+		"cmake.generator": "Ninja",
+		"cmake.useCMakeServer": false,
+	}
+}
