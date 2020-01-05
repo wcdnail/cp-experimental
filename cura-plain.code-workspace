@@ -10,5 +10,9 @@
 		],
 		"cmake.generator": "Ninja",
 		"cmake.useCMakeServer": false,
+		"files.associations": {
+			"cura-plain-settings.h": "c",
+			"json-glib.h": "c"
+		},
 	}
 }
