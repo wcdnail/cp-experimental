@@ -24,10 +24,12 @@ typedef struct _AppSettingsClass AppSettingsClass;
 
 #define APPSETTINGS_TYPE_OBJECT                (app_settings_get_type())
 #define APPSETTINGS_OBJECT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), APPSETTINGS_TYPE_OBJECT, AppSettings))
+/*
 #define APPSETTINGS_IS_OBJECT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), APPSETTINGS_TYPE_OBJECT))
 #define APPSETTINGS_OBJECT_CLASS(cls)          (G_TYPE_CHECK_CLASS_CAST((cls), APPSETTINGS_TYPE_OBJECT, AppSettingsClass))
 #define APPSETTINGS_IS_OBJECT_CLASS(cls)       (G_TYPE_CHECK_CLASS_TYPE((cls), APPSETTINGS_TYPE_OBJECT))
 #define APPSETTINGS_OBJECT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), APPSETTINGS_TYPE_OBJECT, AppSettingsClass))
+*/
 
 G_DEFINE_TYPE(AppSettings, app_settings, G_TYPE_OBJECT);
 

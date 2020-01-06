@@ -12,11 +12,11 @@ guchar* fileRead(const char *pathname, gssize *readed)
     GFile            *file = g_file_new_for_path(pathname);
     GFileInputStream *istm = g_file_read(file, NULL, &error);
     if (!file) {
-        errorTitle = "init";
+        errorTitle = "create";
         goto onError;
     }
     if (!istm) {
-        errorTitle = "read";
+        errorTitle = "input stream";
         goto onError;
     }
     info = g_file_input_stream_query_info(G_FILE_INPUT_STREAM(istm), G_FILE_ATTRIBUTE_STANDARD_SIZE, NULL, &error);
@@ -45,7 +45,7 @@ guchar* fileRead(const char *pathname, gssize *readed)
     }
     goto noError;
 onError:
-    g_print("FILEMANIP [%s] %s ERROR: [%d] %s\n", 
+    g_print("FILEREAD [%s] %s ERROR: [%d] %s\n", 
         pathname, 
         errorTitle,
         error ? error->code : errno, 
