@@ -1,20 +1,9 @@
 #include <gtk/gtk.h>
 #include "glaunch-pad.h"
 #include "gmain-win.h"
+#include "appconfig.h"
 
-/*
-int main (int argc, char **argv)
-{
-    int              rv = 0;
-    GtkApplication *app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
-    g_signal_connect(app, "activate", G_CALLBACK(onAppActivate), NULL);
-    rv = g_application_run(G_APPLICATION(app), argc, argv);
-    appSettingSave();
-    appSettingsFree();
-    g_object_unref(app);
-    return rv;
-}
-*/
+//---------------------------------------------------------------------------------------------------------------------
 
 struct _GLaunchPad
 {
@@ -22,6 +11,24 @@ struct _GLaunchPad
 };
 
 G_DEFINE_TYPE(GLaunchPad, glaunch_pad, GTK_TYPE_APPLICATION);
+
+static void glaunch_pad_activate(GApplication *app);
+static void glaunch_pad_open(GApplication *app, GFile **files, gint n_files, const gchar *hint);
+static void glaunch_pad_shutdown(GApplication *app);
+
+static void glaunch_pad_class_init(GLaunchPadClass *cls)
+{
+    G_APPLICATION_CLASS(cls)->activate = glaunch_pad_activate;
+    G_APPLICATION_CLASS(cls)->open = glaunch_pad_open;
+    G_APPLICATION_CLASS(cls)->shutdown = glaunch_pad_shutdown;
+}
+
+GLaunchPad *glaunch_pad_new(void)
+{
+    return g_object_new(GLAUNCH_PAD_TYPE, "application-id", "org.gtk.exampleapp", "flags", G_APPLICATION_HANDLES_OPEN, NULL);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 static void glaunch_pad_init(GLaunchPad *app)
 {
@@ -51,13 +58,8 @@ static void glaunch_pad_open(GApplication *app, GFile **files, gint n_files, con
     gtk_window_present(GTK_WINDOW(win));
 }
 
-static void glaunch_pad_class_init(GLaunchPadClass *cls)
+static void glaunch_pad_shutdown(GApplication *app)
 {
-    G_APPLICATION_CLASS(cls)->activate = glaunch_pad_activate;
-    G_APPLICATION_CLASS(cls)->open = glaunch_pad_open;
-}
-
-GLaunchPad *glaunch_pad_new(void)
-{
-    return g_object_new(GLAUNCH_PAD_TYPE, "application-id", "org.gtk.exampleapp", "flags", G_APPLICATION_HANDLES_OPEN, NULL);
+    appSettingsSave();
+    appSettingsFree();
 }

@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
 #include "gmain-win.h"
-#include "gsettings.h"
+#include "appconfig.h"
+
+//---------------------------------------------------------------------------------------------------------------------
 
 struct _GMainWin
 {
@@ -20,6 +22,8 @@ GMainWin *gmain_win_new(GLaunchPad *app)
 {
     return g_object_new(GMAIN_WIN_TYPE, "application", app, NULL);
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 static void gmain_win_init(GMainWin *win)
 {

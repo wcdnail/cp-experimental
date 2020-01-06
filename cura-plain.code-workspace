@@ -22,7 +22,11 @@
 			"cstdlib": "c",
 			"cura-plain-app.h": "c",
 			"gmain-win.h": "c",
-			"glaunch-pad.h": "c"
+			"glaunch-pad.h": "c",
+			"gsettings.h": "c",
+			"settings.h": "c",
+			"config.h": "c",
+			"appconfig.h": "c"
 		},
 	}
 }

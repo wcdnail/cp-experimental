@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include "gsettings.h"
+#include "appconfig.h"
 #include "filemanip.h"
 #include "glaunch-pad.h"
 #include <glib-object.h>
@@ -35,7 +35,6 @@ static void app_settings_set_property(GObject *gobject, guint prop_id, const GVa
     {
     case PROP_APPSETTING_ID:             self->id = g_value_get_uint(value); break;
     case PROP_APPSETTING_RECT:           grect_set_rect(self->appRect, (PGRect)g_value_get_object(value)); break;
-    case PROP_APPSETTING_WORK_AREA_RECT: grect_set_rect(self->workRect, (PGRect)g_value_get_object(value)); break;
     case PROP_APPSETTING_TITLE: {
         g_free((gpointer)self->appTitle);
         self->appTitle = g_value_dup_string(value);
@@ -53,7 +52,6 @@ static void app_settings_get_property(GObject *gobject, guint prop_id, GValue *v
     {
     case PROP_APPSETTING_ID:             g_value_set_uint(value, self->id); break;
     case PROP_APPSETTING_RECT:           g_value_set_object(value, self->appRect); break;
-    case PROP_APPSETTING_WORK_AREA_RECT: g_value_set_object(value, self->workRect); break;
     case PROP_APPSETTING_TITLE:          g_value_set_string(value, self->appTitle); break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
@@ -63,7 +61,6 @@ static void app_settings_get_property(GObject *gobject, guint prop_id, GValue *v
 static void app_settings_finalize(GObject *gobject)
 {
     PAppSettings self = APPSETTINGS_OBJECT(gobject);
-    g_object_unref(self->workRect);
     g_object_unref(self->appRect);
     g_free((gpointer)self->appTitle);
     G_OBJECT_CLASS(app_settings_parent_class)->finalize(gobject);
@@ -78,7 +75,6 @@ static void app_settings_class_init(AppSettingsClass *cls)
     g_object_class_install_property(gobject, PROP_APPSETTING_ID, g_param_spec_uint("id", "Id", "", 0, G_MAXUINT, 0, G_PARAM_READWRITE));
     g_object_class_install_property(gobject, PROP_APPSETTING_TITLE, g_param_spec_string("appTitle", "AppTitle", "", NULL, G_PARAM_READWRITE));
     g_object_class_install_property(gobject, PROP_APPSETTING_RECT, g_param_spec_object("appRect", "AppRect", "", grect_get_type(), G_PARAM_READWRITE));
-    g_object_class_install_property(gobject, PROP_APPSETTING_WORK_AREA_RECT, g_param_spec_object("workRect", "WorkRect", "", grect_get_type(), G_PARAM_READWRITE));
 }
 
 static void app_settings_init(PAppSettings self)
@@ -86,7 +82,6 @@ static void app_settings_init(PAppSettings self)
     self->id = 0;
     self->appTitle = g_strdup(_DEF_WND_TITLE);
     self->appRect = grect_new_size(_DEF_WND_WIDTH, _DEF_WND_HEIGHT);
-    self->workRect = grect_new_size(_DEF_WND_WIDTH-(_DEF_WND_WIDTH/4), _DEF_WND_HEIGHT-(_DEF_WND_HEIGHT/4));
     grect_put_to_center_of_screen(self->appRect);
 }
 
@@ -145,7 +140,7 @@ void appSettingsFree(void)
     currentSettings = NULL;
 }
 
-void appSettingSave(void)
+void appSettingsSave(void)
 {
     gsize settingsJsonLen = 0;
     gchar   *settingsJson = json_gobject_to_data(G_OBJECT(currentSettings), &settingsJsonLen);
