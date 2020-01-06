@@ -1,0 +1,13 @@
+{
+  "appTitle" : "[DEBUG] Cura-Plain UI",
+  "appRect" : {
+    "x" : 348,
+    "y" : 176,
+    "cx" : 1024,
+    "cy" : 768
+  },
+  "workRect" : {
+    "cx" : 800,
+    "cy" : 600
+  }
+}

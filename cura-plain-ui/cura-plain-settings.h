@@ -4,14 +4,18 @@
 
 enum _AppSettingsFields {
     PROP_APPSETTING_0,
+    PROP_APPSETTING_ID,
     PROP_APPSETTING_TITLE,
     PROP_APPSETTING_RECT,
+    PROP_APPSETTING_WORK_AREA_RECT,
 };
 
 struct _AppSettings {
-    GObject  parent;
-    gchar *appTitle;
-    GRect  *appRect;
+    GObject     super;
+    guint          id;
+    gchar   *appTitle;
+    GRect    *appRect;
+    GRect   *workRect;
 };
 
 typedef struct _AppSettings   AppSettings;
