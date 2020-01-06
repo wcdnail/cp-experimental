@@ -18,7 +18,8 @@
 			"gdk.h": "c",
 			"gdkconfig.h": "c",
 			"glib.h": "c",
-			"galloca.h": "c"
+			"galloca.h": "c",
+			"cstdlib": "c"
 		},
 	}
 }

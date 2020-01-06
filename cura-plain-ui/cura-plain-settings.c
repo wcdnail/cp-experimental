@@ -1,10 +1,13 @@
 #include <gtk/gtk.h>
 #include "cura-plain-settings.h"
+#include "filemanip.h"
 #include <glib-object.h>
 #include <json-glib/json-glib.h>
 #include <json-glib/json-gobject.h>
 
 //---------------------------------------------------------------------------------------------------------------------
+
+#define _DEF_APPSETTINGS_PATHNAME "cura-plain-ui/cura-plain-settings.json"
 
 #define _DEF_WND_TITLE  "Cura-Plain UI"
 #define _DEF_WND_WIDTH  1024
@@ -96,9 +99,43 @@ static PAppSettings currentSettings = NULL;
 
 PAppSettings appSettings(void)
 {
+    static const char pathname[] = _DEF_APPSETTINGS_PATHNAME;
+    const char       *errorTitle = "unknown";
+    GError                *error = NULL;
+    guchar              *jsonstr = NULL;
     if (!currentSettings) {
-        currentSettings = (PAppSettings)g_object_new(APPSETTINGS_TYPE_OBJECT, NULL);
+        gssize readed = -1;
+        jsonstr = fileRead(pathname, &readed);
+        if(jsonstr) {
+            currentSettings = (PAppSettings)json_gobject_from_data(APPSETTINGS_TYPE_OBJECT, (gchar*)jsonstr, readed, &error);
+            if (!currentSettings) {
+                errorTitle = "object from json";
+                goto onError;
+            }
+        }
+        if (!currentSettings) {
+            goto onError;
+        }
     }
+    goto noError;
+onError:
+    if (error) {
+        g_print("SETTINGS [%s] %s ERROR: [%d] %s. Using defaults...\n", 
+            pathname, 
+            errorTitle,
+            error->code, 
+            error->message);
+    }
+    else {
+      g_print("SETTINGS [%s] %s ERROR! Using defaults...\n", 
+            pathname, 
+            errorTitle);
+    }
+    if (jsonstr) {
+        g_free(jsonstr);
+    }
+    currentSettings = (PAppSettings)g_object_new(APPSETTINGS_TYPE_OBJECT, NULL);
+noError:        
     return currentSettings;
 }
 

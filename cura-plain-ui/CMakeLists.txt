@@ -18,6 +18,7 @@ set(SRCS
 cura-plain-app.c
 cura-plain-settings.c
 grect.c
+filemanip.c
 )
 
 add_executable(${PROJECT_NAME} "${SRCS}")
