@@ -15,12 +15,6 @@ typedef struct _GRectClass GRectClass;
 
 #define GRECT_TYPE_OBJECT                (grect_get_type())
 #define GRECT_OBJECT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), GRECT_TYPE_OBJECT, GRect))
-/*
-#define GRECT_IS_OBJECT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), GRECT_TYPE_OBJECT))
-#define GRECT_OBJECT_CLASS(cls)          (G_TYPE_CHECK_CLASS_CAST((cls), GRECT_TYPE_OBJECT, GRectClass))
-#define GRECT_IS_OBJECT_CLASS(cls)       (G_TYPE_CHECK_CLASS_TYPE((cls), GRECT_TYPE_OBJECT))
-#define GRECT_OBJECT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), GRECT_TYPE_OBJECT, GRectClass))
-*/
 
 G_DEFINE_TYPE(GRect, grect, G_TYPE_OBJECT);
 

@@ -14,14 +14,10 @@ add_definitions(${JSONGLIB_CFLAGS_OTHER})
 include_directories(SYSTEM ${JSONGLIB_INCLUDE_DIRS})
 link_directories(${JSONGLIB_LIBRARY_DIRS})
 
-set(SRCS
-cura-plain-app.c
-cura-plain-settings.c
-grect.c
-filemanip.c
-)
+file(GLOB_RECURSE CXX_SRCS *.cpp)
+file(GLOB_RECURSE C_SRCS *.c)
 
-add_executable(${PROJECT_NAME} "${SRCS}")
+add_executable(${PROJECT_NAME} "${C_SRCS} ${CXX_SRCS}")
 
 target_link_libraries(${PROJECT_NAME} ${GTK3_LIBRARIES} ${JSONGLIB_LIBRARIES})
 

@@ -19,7 +19,10 @@
 			"gdkconfig.h": "c",
 			"glib.h": "c",
 			"galloca.h": "c",
-			"cstdlib": "c"
+			"cstdlib": "c",
+			"cura-plain-app.h": "c",
+			"gmain-win.h": "c",
+			"glaunch-pad.h": "c"
 		},
 	}
 }

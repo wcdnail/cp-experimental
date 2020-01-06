@@ -1,13 +1,14 @@
 #include <gtk/gtk.h>
-#include "cura-plain-settings.h"
+#include "gsettings.h"
 #include "filemanip.h"
+#include "glaunch-pad.h"
 #include <glib-object.h>
 #include <json-glib/json-glib.h>
 #include <json-glib/json-gobject.h>
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#define _DEF_APPSETTINGS_PATHNAME "cura-plain-ui/cura-plain-settings.json"
+#define _DEF_APPSETTINGS_PATHNAME _DEF_APP_ID "-settings.json"
 
 #define _DEF_WND_TITLE  "Cura-Plain UI"
 #define _DEF_WND_WIDTH  1024
@@ -24,12 +25,6 @@ typedef struct _AppSettingsClass AppSettingsClass;
 
 #define APPSETTINGS_TYPE_OBJECT                (app_settings_get_type())
 #define APPSETTINGS_OBJECT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), APPSETTINGS_TYPE_OBJECT, AppSettings))
-/*
-#define APPSETTINGS_IS_OBJECT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), APPSETTINGS_TYPE_OBJECT))
-#define APPSETTINGS_OBJECT_CLASS(cls)          (G_TYPE_CHECK_CLASS_CAST((cls), APPSETTINGS_TYPE_OBJECT, AppSettingsClass))
-#define APPSETTINGS_IS_OBJECT_CLASS(cls)       (G_TYPE_CHECK_CLASS_TYPE((cls), APPSETTINGS_TYPE_OBJECT))
-#define APPSETTINGS_OBJECT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), APPSETTINGS_TYPE_OBJECT, AppSettingsClass))
-*/
 
 G_DEFINE_TYPE(AppSettings, app_settings, G_TYPE_OBJECT);
 
@@ -102,7 +97,7 @@ static PAppSettings currentSettings = NULL;
 PAppSettings appSettings(void)
 {
     static const char pathname[] = _DEF_APPSETTINGS_PATHNAME;
-    const char       *errorTitle = "unknown";
+    const char       *errorTitle = NULL;
     GError                *error = NULL;
     guchar              *jsonstr = NULL;
     if (!currentSettings) {
@@ -124,14 +119,14 @@ onError:
     if (error) {
         g_print("SETTINGS [%s] %s ERROR: [%d] %s. Using defaults...\n", 
             pathname, 
-            errorTitle,
+            errorTitle ? errorTitle : "unknown",
             error->code, 
             error->message);
     }
     else {
       g_print("SETTINGS [%s] %s ERROR! Using defaults...\n", 
             pathname, 
-            errorTitle);
+            errorTitle ? errorTitle : "unknown");
     }
     if (jsonstr) {
         g_free(jsonstr);
