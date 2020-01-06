@@ -8,7 +8,7 @@
 
 struct _GRectClass
 {
-    GObjectClass parent_class;
+    GObjectClass parent;
 };
 
 typedef struct _GRectClass GRectClass;
@@ -26,11 +26,12 @@ static void grect_set_property(GObject *gobject, guint prop_id, const GValue *va
 {
     switch (prop_id)
     {
-    case G_RC_X:  GRECT_OBJECT(gobject)->x = g_value_get_int(value); break;
-    case G_RC_Y:  GRECT_OBJECT(gobject)->y = g_value_get_int(value); break;
-    case G_RC_CX: GRECT_OBJECT(gobject)->cx = g_value_get_int(value); break;
-    case G_RC_CY: GRECT_OBJECT(gobject)->cy = g_value_get_int(value); break;
-    default:      G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
+    case GRC_PROP_X:  GRECT_OBJECT(gobject)->x = g_value_get_int(value); break;
+    case GRC_PROP_Y:  GRECT_OBJECT(gobject)->y = g_value_get_int(value); break;
+    case GRC_PROP_CX: GRECT_OBJECT(gobject)->cx = g_value_get_int(value); break;
+    case GRC_PROP_CY: GRECT_OBJECT(gobject)->cy = g_value_get_int(value); break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
     }
 }
 
@@ -38,11 +39,12 @@ static void grect_get_property(GObject *gobject, guint prop_id, GValue *value, G
 {
     switch (prop_id)
     {
-    case G_RC_X:  g_value_set_int(value, GRECT_OBJECT(gobject)->x); break;
-    case G_RC_Y:  g_value_set_int(value, GRECT_OBJECT(gobject)->y); break;
-    case G_RC_CX: g_value_set_int(value, GRECT_OBJECT(gobject)->cx); break;
-    case G_RC_CY: g_value_set_int(value, GRECT_OBJECT(gobject)->cy); break;
-    default:      G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
+    case GRC_PROP_X:  g_value_set_int(value, GRECT_OBJECT(gobject)->x); break;
+    case GRC_PROP_Y:  g_value_set_int(value, GRECT_OBJECT(gobject)->y); break;
+    case GRC_PROP_CX: g_value_set_int(value, GRECT_OBJECT(gobject)->cx); break;
+    case GRC_PROP_CY: g_value_set_int(value, GRECT_OBJECT(gobject)->cy); break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
     }
 }
 
@@ -51,10 +53,10 @@ static void grect_class_init(GRectClass *cls)
     GObjectClass *gobject = G_OBJECT_CLASS(cls);
     gobject->set_property = grect_set_property;
     gobject->get_property = grect_get_property;
-    g_object_class_install_property(gobject, G_RC_X, g_param_spec_int("x", "X", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
-    g_object_class_install_property(gobject, G_RC_Y, g_param_spec_int("y", "Y", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
-    g_object_class_install_property(gobject, G_RC_CX, g_param_spec_int("cx", "CX", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
-    g_object_class_install_property(gobject, G_RC_CY, g_param_spec_int("cy", "CY", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, GRC_PROP_X, g_param_spec_int("x", "X", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, GRC_PROP_Y, g_param_spec_int("y", "Y", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, GRC_PROP_CX, g_param_spec_int("cx", "CX", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, GRC_PROP_CY, g_param_spec_int("cy", "CY", "", 0, _DEF_GRECT_MAX_VALUE, 0, G_PARAM_READWRITE));
 }
 
 static void grect_init(GRect *obj)
@@ -64,6 +66,8 @@ static void grect_init(GRect *obj)
     obj->cx = 0;
     obj->cy = 0;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 PGRect grect_new(void)
 {

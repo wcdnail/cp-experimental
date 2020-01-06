@@ -3,8 +3,9 @@
 #include "grect.h"
 
 enum _AppSettingsFields {
-    CP_PROP_APP_TITLE = 1,
-    CP_PROP_APP_RECT,
+    PROP_APPSETTING_0,
+    PROP_APPSETTING_TITLE,
+    PROP_APPSETTING_RECT,
 };
 
 struct _AppSettings {

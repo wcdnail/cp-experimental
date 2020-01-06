@@ -1,10 +1,11 @@
 #pragma once
 
-enum _G_RECT_FLDS {
-    G_RC_X = 1,
-    G_RC_Y,
-    G_RC_CX,
-    G_RC_CY,
+enum _GRectFields {
+    GRC_PROP_0,
+    GRC_PROP_X,
+    GRC_PROP_Y,
+    GRC_PROP_CX,
+    GRC_PROP_CY,
 };
 
 struct _GRect {
@@ -17,7 +18,6 @@ struct _GRect {
 
 typedef struct _GRect   GRect;
 typedef struct _GRect *PGRect;
-
 
 GType grect_get_type(void);
 PGRect grect_new(void);

@@ -12,13 +12,9 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static PAppSettings defaultAppSettings = NULL;
-
-//---------------------------------------------------------------------------------------------------------------------
-
 struct _AppSettingsClass
 {
-    GObjectClass parent_class;
+    GObjectClass parent;
 };
 
 typedef struct _AppSettingsClass AppSettingsClass;
@@ -37,14 +33,13 @@ static void app_settings_set_property(GObject *gobject, guint prop_id, const GVa
     PAppSettings self = APPSETTINGS_OBJECT(gobject);
     switch (prop_id)
     {
-    case CP_PROP_APP_TITLE:
+    case PROP_APPSETTING_TITLE:
         g_free((gpointer)self->appTitle);
         self->appTitle = g_value_dup_string(value);
         break;
-    case CP_PROP_APP_RECT: {
+    case PROP_APPSETTING_RECT:
         grect_set_rect(self->appRect, (PGRect)g_value_get_object(value));
 		break;
-    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
     }
@@ -52,13 +47,14 @@ static void app_settings_set_property(GObject *gobject, guint prop_id, const GVa
 
 static void app_settings_get_property(GObject *gobject, guint prop_id, GValue *value, GParamSpec *pspec)
 {
+    PAppSettings self = APPSETTINGS_OBJECT(gobject);
     switch (prop_id)
     {
-    case CP_PROP_APP_TITLE:
-        g_value_set_string(value, APPSETTINGS_OBJECT(gobject)->appTitle);
+    case PROP_APPSETTING_TITLE:
+        g_value_set_string(value, self->appTitle);
         break;
-    case CP_PROP_APP_RECT:
-        g_value_set_object(value, APPSETTINGS_OBJECT(gobject)->appRect);
+    case PROP_APPSETTING_RECT:
+        g_value_set_object(value, self->appRect);
 		break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
@@ -79,8 +75,8 @@ static void app_settings_class_init(AppSettingsClass *cls)
     gobject->set_property = app_settings_set_property;
     gobject->get_property = app_settings_get_property;
     gobject->finalize = app_settings_finalize;
-    g_object_class_install_property(gobject, CP_PROP_APP_TITLE, g_param_spec_string("appTitle", "AppTitle", "Main window title", _DEF_WND_TITLE, G_PARAM_READWRITE));
-    g_object_class_install_property(gobject, CP_PROP_APP_RECT, g_param_spec_object("appRect", "AppRect", "Main window rectangle", grect_get_type(), G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, PROP_APPSETTING_TITLE, g_param_spec_string("appTitle", "AppTitle", "Main window title", _DEF_WND_TITLE, G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, PROP_APPSETTING_RECT, g_param_spec_object("appRect", "AppRect", "Main window rectangle", grect_get_type(), G_PARAM_READWRITE));
 }
 
 static void app_settings_init(PAppSettings gobject)
@@ -92,26 +88,28 @@ static void app_settings_init(PAppSettings gobject)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+static PAppSettings currentSettings = NULL;
+
 PAppSettings appSettings(void)
 {
-    if (!defaultAppSettings) {
-        defaultAppSettings = (PAppSettings)g_object_new(APPSETTINGS_TYPE_OBJECT, NULL);
+    if (!currentSettings) {
+        currentSettings = (PAppSettings)g_object_new(APPSETTINGS_TYPE_OBJECT, NULL);
     }
-    return defaultAppSettings;
+    return currentSettings;
 }
 
 void appSettingsFree(void)
 {
-    if (defaultAppSettings) {
-        g_object_unref(defaultAppSettings);
+    if (currentSettings) {
+        g_object_unref(currentSettings);
     }
-    defaultAppSettings = NULL;
+    currentSettings = NULL;
 }
 
 void appSettingSave(void)
 {
     gsize settingsJsonLen = 0;
-    gchar   *settingsJson = json_gobject_to_data(G_OBJECT(defaultAppSettings), &settingsJsonLen);
+    gchar   *settingsJson = json_gobject_to_data(G_OBJECT(currentSettings), &settingsJsonLen);
     g_assert_true(NULL != settingsJson);
     g_print("Settings:\n%s\n", settingsJson);
     g_free(settingsJson);
