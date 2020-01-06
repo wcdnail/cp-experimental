@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(cura-plain-ui)
+project(launch-pad)
 
 find_package(PkgConfig REQUIRED)
 

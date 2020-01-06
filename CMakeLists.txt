@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(cura-plain)
+project(cp-experimental)
 
 set(REL_DEFS          "-DNDEBUG")
 set(DBG_DEFS          "-D_DEBUG")
@@ -31,5 +31,5 @@ if (WIN32)
     endif()
 endif()
 
-add_subdirectory(cura-plain-ui)
+add_subdirectory(launch-pad)
 

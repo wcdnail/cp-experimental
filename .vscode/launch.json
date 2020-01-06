@@ -8,7 +8,7 @@
             "name": "[gdb] UI",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/cura-plain-ui/cura-plain-ui.exe",
+            "program": "${workspaceFolder}/build/launch-pad/launch-pad.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

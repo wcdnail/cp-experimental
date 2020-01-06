@@ -111,6 +111,7 @@ PAppSettings appSettings(void)
             }
         }
         if (!currentSettings) {
+            errorTitle = "loading";
             goto onError;
         }
     }
