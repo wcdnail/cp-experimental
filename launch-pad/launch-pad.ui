@@ -13,8 +13,8 @@
     <property name="icon_name">start-here</property>
     <property name="gravity">static</property>
     <property name="has_resize_grip">True</property>
-    <signal name="map" handler="gmain_win_on_map" swapped="no"/>
-    <signal name="unmap" handler="gmain_win_on_unmap" swapped="no"/>
+    <signal name="map" handler="mainwin_OnMap" swapped="no"/>
+    <signal name="unmap" handler="mainwin_OnUnmap" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -40,7 +40,7 @@
                 <property name="can_focus">False</property>
               </object>
               <packing>
-                <property name="resize">True</property>
+                <property name="resize">False</property>
                 <property name="shrink">True</property>
               </packing>
             </child>
@@ -90,6 +90,93 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
+              <object class="GtkBox" id="logCtlBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkToolbar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkToolItem" id="cmdLinePlace">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkEntry" id="cmdSingleCommandEditBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="cmdRunSingleCommand">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="stock_id">gtk-ok</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolbar" id="logToolBar">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkToggleToolButton" id="logctlToggleScrollDown">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="stock_id">gtk-goto-bottom</property>
+                        <signal name="toggled" handler="logBox_OnToggleScrollDown" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToolButton" id="logctlClear">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="stock_id">gtk-cancel</property>
+                        <signal name="clicked" handler="logBox_OnClear" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkScrolledWindow" id="scrolledLogBox">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -98,6 +185,7 @@
                   <object class="GtkTextView" id="logBox">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="is_focus">True</property>
                     <property name="editable">False</property>
                     <property name="left_margin">5</property>
                     <property name="right_margin">5</property>
@@ -110,7 +198,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>

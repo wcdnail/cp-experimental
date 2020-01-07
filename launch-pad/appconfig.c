@@ -208,6 +208,8 @@ void appSettingsOnWindowInit(GMainWin *win)
     }
     gtk_paned_set_position(win->panRoot, settings->panRootPos);
     gtk_paned_set_position(win->panView, settings->panViewPos);
+    // TODO: configure
+    gtk_toggle_tool_button_set_active(win->logctlToggleScrollDown, TRUE);
 }
 
 void appSettingsOnWindowClose(GMainWin *win)
