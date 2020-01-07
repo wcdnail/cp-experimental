@@ -14,6 +14,23 @@ add_definitions(${JSONGLIB_CFLAGS_OTHER})
 include_directories(SYSTEM ${JSONGLIB_INCLUDE_DIRS})
 link_directories(${JSONGLIB_LIBRARY_DIRS})
 
+set(RESOURCES_CT "${PROJECT_NAME}-resources")
+set(RESOURCES_PN "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.c")
+
+add_custom_command(
+    OUTPUT "${RESOURCES_PN}"
+    COMMAND glib-compile-resources
+    ARGS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
+         --target=${RESOURCES_PN} 
+         --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} 
+         --generate-source
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
+            ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ui 
+            ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
+)
+
+add_custom_target(${RESOURCES_CT} ALL DEPENDS ${RESOURCES_PN})
+
 file(GLOB_RECURSE CXX_SRCS *.cpp)
 file(GLOB_RECURSE C_SRCS *.c)
 
