@@ -201,8 +201,8 @@ void appSettingsOnWindowInit(GMainWin *win)
     DGB_FUNC_ENTER(SETTINGS);
     PAppSettings settings = appSettings();
     gtk_window_set_title(GTK_WINDOW(win), settings->appTitle);
-    gtk_window_move(GTK_WINDOW(win), settings->appRect->x, settings->appRect->y);
     gtk_window_set_default_size(GTK_WINDOW(win), settings->appRect->cx, settings->appRect->cy);
+    gtk_window_move(GTK_WINDOW(win), settings->appRect->x, settings->appRect->y);
     if (settings->appIsMaximized) {
         gtk_window_maximize(GTK_WINDOW(win));
     }
@@ -217,8 +217,7 @@ void appSettingsOnWindowClose(GMainWin *win)
     GRect          rcTemp = { 0 };
     settings->appIsMaximized = gtk_window_is_maximized(GTK_WINDOW(win));
     if (!settings->appIsMaximized) {
-        gtk_window_get_position(GTK_WINDOW(win), &rcTemp.x, &rcTemp.y);
-        gtk_window_get_size(GTK_WINDOW(win), &rcTemp.cx, &rcTemp.cy);
+        gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), &rcTemp.x, &rcTemp.y, &rcTemp.cx, &rcTemp.cy);
         grect_set_rect(settings->appRect, &rcTemp);
     }
     settings->panRootPos = gtk_paned_get_position(win->panRoot);
