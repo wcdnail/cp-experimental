@@ -31,6 +31,20 @@ add_custom_command(
 
 add_custom_target(${RESOURCES_CT} ALL DEPENDS ${RESOURCES_PN})
 
+set(SCHEMA_CT "gschemas.compiled")
+set(SCHEMA_PN "${CMAKE_CURRENT_SOURCE_DIR}/${SCHEMA_CT}")
+
+add_custom_command(
+    OUTPUT "${SCHEMA_PN}"
+    COMMAND glib-compile-schemas
+    ARGS --strict
+         --targetdir=${CMAKE_CURRENT_SOURCE_DIR}/
+         ${CMAKE_CURRENT_SOURCE_DIR}/.
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gschema.xml
+)
+
+add_custom_target(${SCHEMA_CT} ALL DEPENDS ${SCHEMA_PN})
+
 file(GLOB_RECURSE CXX_SRCS *.cpp)
 file(GLOB_RECURSE C_SRCS *.c)
 

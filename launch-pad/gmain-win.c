@@ -1,31 +1,34 @@
 #include <gtk/gtk.h>
 #include "gmain-win.h"
 #include "appconfig.h"
-
-//---------------------------------------------------------------------------------------------------------------------
-
-struct _GMainWin
-{
-    GtkApplicationWindow super;
-    GSettings        *settings;
-    GtkWidget           *stack;
-};
+#include "dbg-trace.h"
 
 //---------------------------------------------------------------------------------------------------------------------
 
 G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW);
 
 static void gmain_win_dispose(GObject *gobject);
+static void gmain_win_on_map(GMainWin *win);
+static void gmain_win_on_unmap(GMainWin *win);
 
 static void gmain_win_class_init(GMainWinClass *cls)
 {
+    DGB_FUNC_ENTER(GMAINWIN);
     G_OBJECT_CLASS(cls)->dispose = gmain_win_dispose;
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(cls), "/wcd/launchpad/launch-pad.ui");
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, stack);    
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, panRoot);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, panView);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, modelView);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, configTree);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, configTreeSel);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, logBox);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmain_win_on_map);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmain_win_on_unmap);
 }
 
 GMainWin *gmain_win_new(GLaunchPad *app)
 {
+    DGB_FUNC_ENTER(GMAINWIN);
     return g_object_new(GMAIN_WIN_TYPE, "application", app, NULL);
 }
 
@@ -33,22 +36,33 @@ GMainWin *gmain_win_new(GLaunchPad *app)
 
 static void gmain_win_init(GMainWin *win)
 {
-    //PAppSettings settings = appSettings();
-    //gtk_window_set_title(GTK_WINDOW(win), settings->appTitle);
-    //gtk_window_move(GTK_WINDOW(win), settings->appRect->x, settings->appRect->y);
-    //gtk_window_set_default_size(GTK_WINDOW(win), settings->appRect->cx, settings->appRect->cy);
+    DGB_FUNC_ENTER(GMAINWIN);
     gtk_widget_init_template(GTK_WIDGET(win));
-    win->settings = g_settings_new(_DEF_APP_ID);
-    g_settings_bind(win->settings, "transition", win->stack, "transition-type", G_SETTINGS_BIND_DEFAULT);    
-}
-
-static void gmain_win_dispose(GObject *gobject)
-{
-  GMainWin *win = GMAIN_WIN(gobject);
-  g_clear_object(&win->settings);
-  G_OBJECT_CLASS(gmain_win_parent_class)->dispose(gobject);
+    appSettingsOnWindowInit(win);
+    //win->settings = g_settings_new(_DEF_APP_ID);
+    //g_settings_bind(win->settings, "transition", win->stack, "transition-type", G_SETTINGS_BIND_DEFAULT);    
 }
 
 void gmain_win_open(GMainWin *win, GFile *file)
 {
+    DGB_FUNC_ENTER(GMAINWIN);
+}
+
+static void gmain_win_dispose(GObject *gobject)
+{
+    GMainWin *win = GMAIN_WIN(gobject);
+    DGB_FUNC_ENTER(GMAINWIN);
+    g_clear_object(&win->settings);
+    G_OBJECT_CLASS(gmain_win_parent_class)->dispose(gobject);
+}
+
+static void gmain_win_on_map(GMainWin *win)
+{
+    DGB_FUNC_ENTER(GMAINWIN);
+}
+
+static void gmain_win_on_unmap(GMainWin *win)
+{
+    DGB_FUNC_ENTER(GMAINWIN);
+    appSettingsOnWindowClose(win);
 }

@@ -2,18 +2,23 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkApplicationWindow" id="MainWnd">
+  <template class="GMainWin" parent="GtkApplicationWindow">
     <property name="name">MainWnd</property>
     <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Launch Pad</property>
     <property name="default_width">1024</property>
     <property name="default_height">768</property>
     <property name="destroy_with_parent">True</property>
+    <property name="icon">sm-star.jpg</property>
+    <property name="gravity">static</property>
     <property name="has_resize_grip">True</property>
-    <child type="titlebar">
+    <signal name="map" handler="gmain_win_on_map" swapped="no"/>
+    <signal name="unmap" handler="gmain_win_on_unmap" swapped="no"/>
+    <child>
       <placeholder/>
     </child>
     <child>
-      <object class="GtkPaned" id="PanedRoot">
+      <object class="GtkPaned" id="panRoot">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="orientation">vertical</property>
@@ -21,15 +26,14 @@
         <property name="position_set">True</property>
         <property name="wide_handle">True</property>
         <child>
-          <object class="GtkPaned" id="PanedView">
+          <object class="GtkPaned" id="panView">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="position">700</property>
             <property name="position_set">True</property>
             <property name="wide_handle">True</property>
             <child>
-              <object class="GtkGLArea" id="ModelView">
-                <property name="name">ModelView</property>
+              <object class="GtkGLArea" id="modelView">
                 <property name="visible">True</property>
                 <property name="app_paintable">True</property>
                 <property name="can_focus">False</property>
@@ -40,12 +44,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTreeView">
-                <property name="name">ConfigTree</property>
+              <object class="GtkTreeView" id="configTree">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <child internal-child="selection">
-                  <object class="GtkTreeSelection"/>
+                  <object class="GtkTreeSelection" id="configTreeSel"/>
                 </child>
               </object>
               <packing>
@@ -60,10 +63,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTextView" id="LogBox">
+          <object class="GtkTextView" id="logBox">
             <property name="name">LogBox</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="editable">False</property>
+            <property name="cursor_visible">False</property>
           </object>
           <packing>
             <property name="resize">True</property>
@@ -72,5 +77,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>

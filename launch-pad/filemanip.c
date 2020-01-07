@@ -54,7 +54,7 @@ onError:
         g_free(filebuf);
         filebuf = NULL;
     }
-noError:        
+noError:
     if (info) {
         g_object_unref(info);
     }

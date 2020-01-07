@@ -9,6 +9,9 @@
 			"-Wno-dev"
 		],
 		"cmake.generator": "Ninja",
-		"cmake.useCMakeServer": false
+		"cmake.useCMakeServer": false,
+		"files.associations": {
+			"filemanip.h": "c"
+		}
 	}
 }

@@ -62,4 +62,5 @@ static void glaunch_pad_shutdown(GApplication *app)
 {
     appSettingsSave();
     appSettingsFree();
+    G_APPLICATION_CLASS(glaunch_pad_parent_class)->shutdown(app);
 }
