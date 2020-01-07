@@ -12,7 +12,12 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
+            "environment": [ 
+                { 
+                    "name": "GSETTINGS_SCHEMA_DIR",
+                    "value": "${workspaceFolder}/launch-pad"
+                }
+            ],
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "C:/Dev/msys64/mingw64/bin/gdb.exe",

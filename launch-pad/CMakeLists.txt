@@ -55,7 +55,7 @@ add_custom_command(
     ARGS --strict
          --targetdir=${CMAKE_CURRENT_SOURCE_DIR}/
          ${CMAKE_CURRENT_SOURCE_DIR}/.
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gschema.xml
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/wcd.launch.pad.gschema.xml
 )
 
 add_custom_target(${SCHEMA_CT} ALL DEPENDS ${SCHEMA_PN})

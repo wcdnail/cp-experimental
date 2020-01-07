@@ -1,6 +1,6 @@
 #pragma once
 
-#define _DEF_APP_ID      "launch.pad"
+#define _DEF_APP_ID      "wcd.launch.pad"
 #define GLAUNCH_PAD_TYPE (glaunch_pad_get_type())
 
 G_DECLARE_FINAL_TYPE(GLaunchPad, glaunch_pad, GLAUNCH, PAD, GtkApplication)

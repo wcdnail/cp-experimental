@@ -25,7 +25,7 @@ static void glaunch_pad_class_init(GLaunchPadClass *cls)
 
 GLaunchPad *glaunch_pad_new(void)
 {
-    return g_object_new(GLAUNCH_PAD_TYPE, "application-id", "org.gtk.exampleapp", "flags", G_APPLICATION_HANDLES_OPEN, NULL);
+    return g_object_new(GLAUNCH_PAD_TYPE, "application-id", _DEF_APP_ID, "flags", G_APPLICATION_HANDLES_OPEN, NULL);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

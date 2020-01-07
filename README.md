@@ -1,4 +1,4 @@
-# CP Experimental
+# GTK+ 3 experimental
 ## Deps
  - Git
  - CMake
@@ -10,4 +10,4 @@
  - pacman -S mingw-w64-x86_64-glade
  - pacman -S mingw-w64-x86_64-python3-gobject
 # Build & Debug
- - VS code is highly recommended
+ - ...
