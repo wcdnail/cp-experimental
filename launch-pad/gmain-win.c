@@ -64,6 +64,7 @@ static void enum_gsettings_schemas(void)
 #endif    
 }
 
+#ifdef _DEBUG_LOG_BOX
 static gboolean test_log_box(gpointer data)
 {
     static int j = 1;
@@ -73,6 +74,7 @@ static gboolean test_log_box(gpointer data)
     logBoxTrace(LOGBOX_ERROR, "%03d: Error Message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message\n", j++);
     return TRUE;
 }
+#endif
 
 static void gmain_win_init(GMainWin *win)
 {
@@ -87,15 +89,6 @@ static void gmain_win_init(GMainWin *win)
     appSettingsOnWindowInit(win);
     // GTK Settings
     enum_gsettings_schemas();
-#if 0    
-    win->settings = g_settings_new(_DEF_APP_ID);
-    if (win->settings) {
-        g_settings_bind(win->settings, "font", win->logBox, "modify_font", G_SETTINGS_BIND_DEFAULT);
-    }
-    else {
-        g_print("GMAINWIN setup settings ERROR!\n");
-    }
-#endif    
     // Appearance
     mainIcon = gdk_pixbuf_new_from_resource("/wcd/launchpad/mainicon", &error);
     if (mainIcon) {
@@ -107,7 +100,9 @@ static void gmain_win_init(GMainWin *win)
     if (mainIcon) {
         g_object_unref(mainIcon);
     }
+#ifdef _DEBUG_LOG_BOX    
     g_timeout_add_seconds(1, test_log_box, NULL);
+#endif    
 }
 
 void gmain_win_open(GMainWin *win, GFile *file)
@@ -117,7 +112,6 @@ void gmain_win_open(GMainWin *win, GFile *file)
 static void gmain_win_dispose(GObject *gobject)
 {
     GMainWin *win = GMAIN_WIN(gobject);
-    g_clear_object(&win->settings);
     G_OBJECT_CLASS(gmain_win_parent_class)->dispose(gobject);
 }
 
