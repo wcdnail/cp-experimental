@@ -2,6 +2,7 @@
 #include "gmain-win.h"
 #include "appconfig.h"
 #include "dbg-trace.h"
+#include "glog-box.h"
 
 //---------------------------------------------------------------------------------------------------------------------
 // GTK Class 
@@ -60,13 +61,14 @@ static void gmain_win_init(GMainWin *win)
     GdkPixbuf *mainIcon = NULL;
     GError       *error = NULL;
     gtk_widget_init_template(GTK_WIDGET(win));
+    logBoxInit(win->logBox);
     // My settings
     appSettingsOnWindowInit(win);
     // GTK Settings
     enum_gsettings_schemas();
-    win->settings = g_settings_new(_DEF_APP_ID);
+    //win->settings = g_settings_new(_DEF_APP_ID);
     if (win->settings) {
-        //g_settings_bind(win->settings, "logboxfont", win->logBox, "modify_font", G_SETTINGS_BIND_DEFAULT);
+        //g_settings_bind(win->settings, "font", win->logBox, "modify_font", G_SETTINGS_BIND_DEFAULT);
     }
     else {
         g_print("GMAINWIN setup settings ERROR!\n");
@@ -81,6 +83,13 @@ static void gmain_win_init(GMainWin *win)
     }
     if (mainIcon) {
         g_object_unref(mainIcon);
+    }
+    int j = 1;
+    for (int i=0; i<10; i++) {
+        logBoxTrace(LOGBOX_MSG, "%03d: Plain Message\n", j++);
+        logBoxTrace(LOGBOX_NOTE, "%03d: Message\n", j++);
+        logBoxTrace(LOGBOX_WARN, "%03d: Warning Message\n", j++);
+        logBoxTrace(LOGBOX_ERROR, "%03d: Error Message\n", j++);
     }
 }
 
