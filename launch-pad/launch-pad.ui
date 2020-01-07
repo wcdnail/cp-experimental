@@ -6,10 +6,11 @@
     <property name="name">MainWnd</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Launch Pad</property>
+    <property name="window_position">center</property>
     <property name="default_width">1024</property>
     <property name="default_height">768</property>
     <property name="destroy_with_parent">True</property>
-    <property name="icon">sm-star.jpg</property>
+    <property name="icon_name">start-here</property>
     <property name="gravity">static</property>
     <property name="has_resize_grip">True</property>
     <signal name="map" handler="gmain_win_on_map" swapped="no"/>

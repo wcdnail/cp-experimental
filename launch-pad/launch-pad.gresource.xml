@@ -3,6 +3,6 @@
   <gresource prefix="/wcd/launchpad">
     <file preprocess="xml-stripblanks">launch-pad.ui</file>
     <file preprocess="xml-stripblanks">launch-pad-menu.ui</file>
-    <file>sm-star.jpg</file>
+    <file>sm-star.png</file>
   </gresource>
 </gresources>

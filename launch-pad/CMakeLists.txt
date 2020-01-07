@@ -27,6 +27,7 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
             ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ui 
             ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
+            ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
 )
 
 add_custom_target(${RESOURCES_CT} ALL DEPENDS ${RESOURCES_PN})
