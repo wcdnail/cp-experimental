@@ -36,8 +36,14 @@ GMainWin *gmain_win_new(GLaunchPad *app)
 
 static void gmain_win_init(GMainWin *win)
 {
+    GdkPixbuf *mainIcon = NULL;
+    GError       *error = NULL;
     gtk_widget_init_template(GTK_WIDGET(win));
     appSettingsOnWindowInit(win);
+    mainIcon = gdk_pixbuf_new_from_resource("/wcd/launchpad/sm-star.png", &error);
+    if (mainIcon) {
+        gtk_window_set_icon(GTK_WINDOW(win), mainIcon);
+    }
     //win->settings = g_settings_new(_DEF_APP_ID);
     //g_settings_bind(win->settings, "transition", win->stack, "transition-type", G_SETTINGS_BIND_DEFAULT);    
 }

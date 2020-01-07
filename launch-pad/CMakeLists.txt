@@ -16,6 +16,13 @@ link_directories(${JSONGLIB_LIBRARY_DIRS})
 
 set(RESOURCES_CT "${PROJECT_NAME}-resources")
 set(RESOURCES_PN "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.c")
+set(RESOURCES_H  "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.h")
+set(RESOURCES_LIST
+    ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
+    ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ui 
+    ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
+)
 
 add_custom_command(
     OUTPUT "${RESOURCES_PN}"
@@ -24,13 +31,20 @@ add_custom_command(
          --target=${RESOURCES_PN} 
          --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} 
          --generate-source
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
-            ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ui 
-            ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
-            ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
+    DEPENDS ${RESOURCES_LIST}
 )
 
-add_custom_target(${RESOURCES_CT} ALL DEPENDS ${RESOURCES_PN})
+add_custom_command(
+    OUTPUT "${RESOURCES_H}"
+    COMMAND glib-compile-resources
+    ARGS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
+         --target=${RESOURCES_H} 
+         --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} 
+         --generate-header
+    DEPENDS ${RESOURCES_LIST}
+)
+
+add_custom_target(${RESOURCES_CT} ALL DEPENDS ${RESOURCES_PN} ${RESOURCES_H})
 
 set(SCHEMA_CT "gschemas.compiled")
 set(SCHEMA_PN "${CMAKE_CURRENT_SOURCE_DIR}/${SCHEMA_CT}")
