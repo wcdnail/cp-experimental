@@ -5,6 +5,6 @@
     <file preprocess="xml-stripblanks">launch-pad-menu.ui</file>
     <file alias="icon-main">launch-pad.png</file>
     <file alias="icon-splash">sm-star.png</file>
-    <file alias="model-initial">cube-plain.stl</file>
+    <file alias="model-dummy">cube-plain.stl</file>
   </gresource>
 </gresources>

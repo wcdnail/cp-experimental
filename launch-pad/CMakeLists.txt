@@ -14,7 +14,10 @@ add_definitions(${JSONGLIB_CFLAGS_OTHER})
 include_directories(SYSTEM ${JSONGLIB_INCLUDE_DIRS})
 link_directories(${JSONGLIB_LIBRARY_DIRS})
 
-find_package(OpenGL REQUIRED)
+pkg_check_modules(EPOXY REQUIRED epoxy)
+add_definitions(${EPOXY_CFLAGS_OTHER})
+include_directories(SYSTEM ${EPOXY_INCLUDE_DIRS})
+link_directories(${EPOXY_LIBRARY_DIRS})
 
 set(RESOURCES_CT "${PROJECT_NAME}-resources")
 set(RESOURCES_PN "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.c")
@@ -24,6 +27,8 @@ set(RESOURCES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ui 
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
+    ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.png
+    ${CMAKE_CURRENT_SOURCE_DIR}/cube-plain.stl
 )
 
 add_custom_command(
@@ -70,7 +75,7 @@ add_executable(${PROJECT_NAME} "${C_SRCS} ${CXX_SRCS}")
 target_link_libraries(${PROJECT_NAME} 
     ${GTK3_LIBRARIES} 
     ${JSONGLIB_LIBRARIES}
-    ${OPENGL_LIBRARY}
+    ${EPOXY_LIBRARIES}
 )
 
 message( "# -----------------------------------------------------------------" )

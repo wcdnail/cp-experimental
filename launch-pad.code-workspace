@@ -11,7 +11,8 @@
 		"cmake.generator": "Ninja",
 		"cmake.useCMakeServer": false,
 		"files.associations": {
-			"filemanip.h": "c"
+			"filemanip.h": "c",
+			"gfile-stl.h": "c"
 		}
 	}
 }
