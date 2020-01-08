@@ -1,9 +1,17 @@
 #pragma once
 
+struct _GVertex
+{
+    float pos[3];
+};
+
+typedef struct _GVertex   GVertex;
+typedef struct _GVertex* PGVertex;
+
 struct _GMesh
 {
     GString  *name;
-    GArray *vertex; // GLfloat [3][]
+    GArray *vertex; // GVertex
     GArray  *index; // GLuint [2][]
 };
 

@@ -12,7 +12,8 @@
 		"cmake.useCMakeServer": false,
 		"files.associations": {
 			"filemanip.h": "c",
-			"gfile-stl.h": "c"
+			"gfile-stl.h": "c",
+			"gl.h": "c"
 		}
 	}
 }
