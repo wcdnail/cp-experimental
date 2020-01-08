@@ -5,20 +5,6 @@
 #include "gfile-stl.h"
 
 static PGScene      currentScene = NULL;
-static guint        defGLProgram = 0;
-static guint      defMvpLocation = 0;
-static guint defPositionLocation = 0;
-static guint    defColorLocation = 0;
-static guint      defVertexArray = 0;
-static float          defMvp[16] = { 0 };
-
-static void gmodel_view_init_mvp(float *res) 
-{
-    res[0] = 1.f; res[4] = 0.f;  res[8] = 0.f; res[12] = 0.f;
-    res[1] = 0.f; res[5] = 1.f;  res[9] = 0.f; res[13] = 0.f;
-    res[2] = 0.f; res[6] = 0.f; res[10] = 1.f; res[14] = 0.f;
-    res[3] = 0.f; res[7] = 0.f; res[11] = 0.f; res[15] = 1.f;
-}
 
 PGScene gsceneNew(GList *meshes)
 {
@@ -53,6 +39,7 @@ void gsceneFree(PGScene scene)
     }
 }
 
+#if 0
 static guint gmodel_view_create_shader(int shader_type, const char *source)
 {
     int   status = 0;
@@ -118,27 +105,10 @@ static void gmodel_view_init_shaders(void)
         glDeleteShader(fragShader);
     }
 }
+#endif
 
 static void gmodel_view_init_startup_scene(void)
 {
-    static const GVertex vertData[] = {
-        {  0.0f,  0.500f, 0.0f },
-        {  0.5f, -0.366f, 0.0f },
-        { -0.5f, -0.366f, 0.0f },
-    };
-    guint buffer = 0;
-    glGenVertexArrays(1, &defVertexArray);
-    glBindVertexArray(defVertexArray);
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertData), vertData, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(defPositionLocation);
-    glVertexAttribPointer(defPositionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(struct _GVertex), (GLvoid*)(G_STRUCT_OFFSET(struct _GVertex, pos)));
-    //glEnableVertexAttribArray(color_index);
-    //glVertexAttribPointer(color_index, 3, GL_FLOAT, GL_FALSE, sizeof(struct vertex_info), (GLvoid*) (G_STRUCT_OFFSET(struct vertex_info, color)));
-    glBindBuffer (GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    glDeleteBuffers(1, &buffer);
     if (!currentScene) {
         currentScene = gsceneNew(NULL);
     }
@@ -163,8 +133,18 @@ void gmodelView_Init(GMainWin *win)
     logBoxTrace(LOGBOX_MSG, "Using OpenGL : %s\n", glGetString(GL_VERSION));
     logBoxTrace(LOGBOX_MSG, "GL vendor    : %s\n", glGetString(GL_VENDOR));
     logBoxTrace(LOGBOX_MSG, "GL renderer  : %s\n", glGetString(GL_RENDERER));
-    gmodel_view_init_mvp(defMvp);
-    gmodel_view_init_shaders();
+    glClearColor(0.1, 0.39, 0.88, 1.0);
+    glColor3f(1.0, 1.0, 1.0);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-2, 2, -1.5, 1.5, 1, 40);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0, 0, -3);
+    glRotatef(50, 1, 0, 0);
+    glRotatef(70, 0, 1, 0);    
     gmodel_view_init_startup_scene();
 }
 
@@ -178,34 +158,11 @@ void gmodelView_Free(GMainWin *win)
         logBoxTrace(LOGBOX_ERROR, "GL FREE: [%d] %s\n", error->code, error->message);
         return;
     }
-    if (defVertexArray) {
-        glDeleteVertexArrays(1, &defVertexArray);
-        defVertexArray = 0;
-    }
-    if (defGLProgram) {
-        glDeleteProgram(defGLProgram);
-        defGLProgram = 0;
-    }
 }
 
 gboolean gmodelView_OnRender(GMainWin *win)
 {
-    glClearColor (0.5, 0.5, 0.5, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(defGLProgram);
-    glUniformMatrix4fv(defMvpLocation, 1, GL_FALSE, &(defMvp[0]));
-    glBindVertexArray(defVertexArray);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(0);
-    glUseProgram(0);
-    //glColor4f(1, 0, 0, 1);
-    //glBegin(GL_LINES);
-    //for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
-    //    glVertex3f(i, 0, 2.5); glVertex3f(i, 0, -2.5);
-    //    glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
-    //}
-    //glEnd();
-#if 0    
     // Draw grid
     glColor4f(1, 0, 0, 1);
     glBegin(GL_LINES);
@@ -228,7 +185,6 @@ gboolean gmodelView_OnRender(GMainWin *win)
             g_list_foreach(currentScene->meshes, gmeshRender, NULL);
         }
     }
-#endif    
     glFlush();
     return FALSE;
 }
