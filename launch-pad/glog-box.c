@@ -5,15 +5,15 @@ static      GtkTextView *mainLogBox = NULL;
 static GtkTextBuffer *mainLogBuffer = NULL;
 static gboolean   mainLogScrollDown = TRUE;
 
-static void logBoxTraceImpl(gint flags, const gchar *format, va_list ap);
+static void glog_trace_impl(gint flags, const gchar *format, va_list ap);
 
 void logBoxInit(GtkTextView *view) 
 {
     mainLogBox = view;
     if(mainLogBox) {
         mainLogBuffer = gtk_text_view_get_buffer(mainLogBox);
-        gtk_text_buffer_create_tag(mainLogBuffer, "time_fg", "foreground", "LIGHTCYAN", NULL); 
-        gtk_text_buffer_create_tag(mainLogBuffer, "time_bg", "background", "STEELBLUE", NULL); 
+        gtk_text_buffer_create_tag(mainLogBuffer, "msghead_fg", "foreground", "LIGHTCYAN", NULL); 
+        gtk_text_buffer_create_tag(mainLogBuffer, "msghead_bg", "background", "STEELBLUE", NULL); 
         gtk_text_buffer_create_tag(mainLogBuffer, "warn_fg", "foreground", "BLUE", NULL); 
         gtk_text_buffer_create_tag(mainLogBuffer, "warn_bg", "background", "WHITE", NULL); 
         gtk_text_buffer_create_tag(mainLogBuffer, "error_fg", "foreground", "YELLOW", NULL); 
@@ -27,7 +27,7 @@ void logBoxTrace(gint flags, const gchar *format, ...)
 {
     va_list ap;
     va_start(ap, format);
-    logBoxTraceImpl(flags, format, ap);
+    glog_trace_impl(flags, format, ap);
     va_end(ap);
 }
 
@@ -44,7 +44,7 @@ void logBox_OnClear(GtkToolButton *btn, gpointer user)
     gtk_text_buffer_delete(mainLogBuffer, &beg, &end);
 }
 
-static void scrollToEnd(void)
+static void glog_scroll_to_end_ui(void)
 {
     GtkTextIter  iter;
     GtkTextMark* mark;
@@ -54,19 +54,15 @@ static void scrollToEnd(void)
     gtk_text_buffer_delete_mark(mainLogBuffer, mark);
 }
 
-static void putTextUI(gint flags, GString *message)
+static void glog_put_text_ui(gint flags, gchar *title, GString *message)
 {
     GtkTextIter iter;
-    gchar *timeStamp = g_date_time_format(g_date_time_new_now_local(), " %T ");
     gtk_text_buffer_get_end_iter(mainLogBuffer, &iter);
-    if (timeStamp) {
-        gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, timeStamp, -1, "bold", 
-            LOGBOX_ERROR == flags ? "error_bg" : "time_bg", 
-            LOGBOX_ERROR == flags ? "error_fg" : "time_fg", 
-            NULL);
-        gtk_text_buffer_get_end_iter(mainLogBuffer, &iter);
-        g_free(timeStamp);
-    }
+    gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, title, -1, "bold", 
+        LOGBOX_ERROR == flags ? "error_bg" : "msghead_bg", 
+        LOGBOX_ERROR == flags ? "error_fg" : "msghead_fg", 
+        NULL);
+    gtk_text_buffer_get_end_iter(mainLogBuffer, &iter);
     switch (flags) {
     case LOGBOX_NOTE:  gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "italic", NULL); break;
     case LOGBOX_WARN:  gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "warn_bg", "warn_fg", NULL); break;
@@ -74,20 +70,36 @@ static void putTextUI(gint flags, GString *message)
     default:           gtk_text_buffer_insert(mainLogBuffer, &iter, message->str, (gint)message->len);
     }
     if (mainLogScrollDown) {
-        scrollToEnd();
+        glog_scroll_to_end_ui();
     }
 }
 
-static void logBoxTraceImpl(gint flags, const gchar *format, va_list ap)
+#define _MSG_HEAD_MAX_LEN 128
+
+static void glog_make_msg_title(gchar *title) 
 {
-    GString *temp = g_string_new(NULL);
-    if (!temp) {
+    gint64       now = g_get_real_time();
+    time_t   nowsecs = (time_t)(now / 1000000);
+    struct tm *nowtm = localtime(&nowsecs);
+    gchar tmbuf[128] = { 0 };
+    strftime(tmbuf, sizeof(tmbuf), "%H:%M:%S", nowtm);
+    g_snprintf(title, _MSG_HEAD_MAX_LEN, " %s.%06d: ", tmbuf, (gint)((now / 1000000) % 1000000));
+}
+
+static void glog_trace_impl(gint flags, const gchar *format, va_list ap)
+{
+    gchar title[_MSG_HEAD_MAX_LEN] = { 0 };
+    GString *message = g_string_new(NULL);
+    if (!message) {
         return ;
     }
-    g_string_vprintf(temp, format, ap);
-    g_print("%s", temp->str);
+    g_string_vprintf(message, format, ap);
+    glog_make_msg_title(title);
+#ifdef _DEBUG
+    g_print("%s%s", title, message->str);
+#endif    
     if (mainLogBox) {
-        putTextUI(flags, temp);
+        glog_put_text_ui(flags, title, message);
     }
-    g_string_free(temp, TRUE);
+    g_string_free(message, TRUE);
 }

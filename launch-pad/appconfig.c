@@ -170,7 +170,7 @@ void appSettingsSave(void)
         errorTitle = "json serialization failed";
         goto onError;
     }
-#ifdef _DEBUG        
+#ifdef _DEBUG_SETTINGS
     g_print("SETTINGS [%s]:\n%s\n", settingsPathname, settingsJson);
 #endif        
     if (!g_file_set_contents(settingsPathname, settingsJson, settingsJsonLen, &error)) {
@@ -198,7 +198,6 @@ noError:
 
 void appSettingsOnWindowInit(GMainWin *win)
 {
-    DGB_FUNC_ENTER(SETTINGS);
     PAppSettings settings = appSettings();
     gtk_window_set_title(GTK_WINDOW(win), settings->appTitle);
     gtk_window_set_default_size(GTK_WINDOW(win), settings->appRect->cx, settings->appRect->cy);
@@ -214,7 +213,6 @@ void appSettingsOnWindowInit(GMainWin *win)
 
 void appSettingsOnWindowClose(GMainWin *win)
 {
-    DGB_FUNC_ENTER(SETTINGS);
     PAppSettings settings = appSettings();
     GRect          rcTemp = { 0 };
     settings->appIsMaximized = gtk_window_is_maximized(GTK_WINDOW(win));

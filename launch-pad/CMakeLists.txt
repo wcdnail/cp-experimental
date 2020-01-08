@@ -14,6 +14,8 @@ add_definitions(${JSONGLIB_CFLAGS_OTHER})
 include_directories(SYSTEM ${JSONGLIB_INCLUDE_DIRS})
 link_directories(${JSONGLIB_LIBRARY_DIRS})
 
+find_package(OpenGL REQUIRED)
+
 set(RESOURCES_CT "${PROJECT_NAME}-resources")
 set(RESOURCES_PN "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.c")
 set(RESOURCES_H  "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.h")
@@ -65,7 +67,11 @@ file(GLOB_RECURSE C_SRCS *.c)
 
 add_executable(${PROJECT_NAME} "${C_SRCS} ${CXX_SRCS}")
 
-target_link_libraries(${PROJECT_NAME} ${GTK3_LIBRARIES} ${JSONGLIB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} 
+    ${GTK3_LIBRARIES} 
+    ${JSONGLIB_LIBRARIES}
+    ${OPENGL_LIBRARY}
+)
 
 message( "# -----------------------------------------------------------------" )
 message( "Project         : [${CMAKE_BUILD_TYPE}] ${PROJECT_NAME}" )

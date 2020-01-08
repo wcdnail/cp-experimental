@@ -20,5 +20,5 @@ struct _GMainWin
     GtkToolButton          *cmdRunSingleCommand;
 };
 
-GMainWin *gmain_win_new(GLaunchPad *app);
-void gmain_win_open(GMainWin *win, GFile *file);
+GMainWin *mainWinNew(GLaunchPad *app);
+void mainWinOpen(GMainWin *win, GFile *file);

@@ -3,19 +3,20 @@
 #include "appconfig.h"
 #include "dbg-trace.h"
 #include "glog-box.h"
+#include "gmodel-view.h"
 
 //---------------------------------------------------------------------------------------------------------------------
 // GTK Class 
 
 G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW);
 
-static void gmain_win_dispose(GObject *gobject);
+static void mainwin_OnDispose(GObject *gobject);
 static void mainwin_OnMap(GMainWin *win, gpointer user);
 static void mainwin_OnUnmap(GMainWin *win, gpointer user);
 
 static void gmain_win_class_init(GMainWinClass *cls)
 {
-    G_OBJECT_CLASS(cls)->dispose = gmain_win_dispose;
+    G_OBJECT_CLASS(cls)->dispose = mainwin_OnDispose;
 
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(cls), "/wcd/launchpad/launch-pad.ui");
 
@@ -33,14 +34,11 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnUnmap);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnToggleScrollDown);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnClear);
+    
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Init);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Free);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_OnRender);
 }
-
-GMainWin *gmain_win_new(GLaunchPad *app)
-{
-    return g_object_new(GMAIN_WIN_TYPE, "application", app, NULL);
-}
-
-//---------------------------------------------------------------------------------------------------------------------
 
 static void enum_gsettings_schemas(void) 
 {
@@ -64,7 +62,7 @@ static void enum_gsettings_schemas(void)
 #endif    
 }
 
-#ifdef _DEBUG_LOG_BOX
+#ifdef _DEBUG_LOGBOX
 static gboolean test_log_box(gpointer data)
 {
     static int j = 1;
@@ -100,16 +98,19 @@ static void gmain_win_init(GMainWin *win)
     if (mainIcon) {
         g_object_unref(mainIcon);
     }
-#ifdef _DEBUG_LOG_BOX    
+#ifdef _DEBUG_LOGBOX
     g_timeout_add_seconds(1, test_log_box, NULL);
-#endif    
+#endif
 }
 
-void gmain_win_open(GMainWin *win, GFile *file)
+//---------------------------------------------------------------------------------------------------------------------
+
+GMainWin *mainWinNew(GLaunchPad *app)
 {
+    return g_object_new(GMAIN_WIN_TYPE, "application", app, NULL);
 }
 
-static void gmain_win_dispose(GObject *gobject)
+static void mainwin_OnDispose(GObject *gobject)
 {
     GMainWin *win = GMAIN_WIN(gobject);
     G_OBJECT_CLASS(gmain_win_parent_class)->dispose(gobject);
@@ -124,3 +125,6 @@ static void mainwin_OnUnmap(GMainWin *win, gpointer user)
     appSettingsOnWindowClose(win);
 }
 
+void mainWinOpen(GMainWin *win, GFile *file)
+{
+}

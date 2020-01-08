@@ -37,7 +37,7 @@ static void glaunch_pad_init(GLaunchPad *app)
 static void glaunch_pad_activate(GApplication *app)
 {
     GMainWin *win;
-    win = gmain_win_new(GLAUNCH_PAD(app));
+    win = mainWinNew(GLAUNCH_PAD(app));
     gtk_window_present(GTK_WINDOW(win));
 }
 
@@ -50,10 +50,10 @@ static void glaunch_pad_open(GApplication *app, GFile **files, gint n_files, con
         win = GMAIN_WIN(windows->data);
     }
     else {
-        win = gmain_win_new(GLAUNCH_PAD(app));
+        win = mainWinNew(GLAUNCH_PAD(app));
     }
     for (int i = 0; i < n_files; i++) {
-        gmain_win_open(win, files[i]);
+        mainWinOpen(win, files[i]);
     }
     gtk_window_present(GTK_WINDOW(win));
 }
