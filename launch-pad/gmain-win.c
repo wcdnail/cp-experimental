@@ -23,8 +23,6 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, panRoot);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, panView);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, modelView);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, configTree);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, configTreeSel);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, logBox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, logctlToggleScrollDown);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdSingleCommandEditBox);
@@ -37,6 +35,7 @@ static void gmain_win_class_init(GMainWinClass *cls)
     
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Init);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Free);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Resize);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_OnRender);
 }
 

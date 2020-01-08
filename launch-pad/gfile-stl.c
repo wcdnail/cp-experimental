@@ -191,7 +191,7 @@ parserError:
         ++lineNum;
     }
     while (readed > 0);
-    logBoxTrace(LOGBOX_NOTE, "LOADSTLA [%s] [V:%d; I:%d]\n", pathname, result->vertex->len, result->index->len);
+    logBoxTrace(LOGBOX_ASSERT, "LOADSTLA [%s] [V:%d; I:%d]\n", pathname, result->vertex->len, result->index->len);
     goto noError;
 onError:
     logBoxTrace(LOGBOX_ERROR, "LOADSTLA [%s] %s ERROR: [%d] %s\n", 

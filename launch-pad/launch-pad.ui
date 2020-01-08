@@ -46,28 +46,62 @@
               <object class="GtkPaned" id="panView">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="position">600</property>
+                <property name="position">500</property>
                 <property name="position_set">True</property>
                 <property name="wide_handle">True</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="rootViewBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkToolbar">
+                      <object class="GtkBox" id="modelViewTopBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkToolButton" id="cmdOpenModel">
+                          <object class="GtkToolbar" id="commonTools">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="stock_id">gtk-open</property>
+                            <child>
+                              <object class="GtkToolButton" id="showSummaryInfo">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="stock_id">gtk-info</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="homogeneous">True</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolbar" id="modelViewTools">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkToolButton" id="modelViewGoHome">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="stock_id">gtk-home</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="homogeneous">True</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="homogeneous">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
@@ -85,9 +119,10 @@
                         <property name="has_alpha">True</property>
                         <property name="has_depth_buffer">True</property>
                         <property name="use_es">True</property>
-                        <signal name="realize" handler="gmodelView_Init" swapped="yes"/>
-                        <signal name="render" handler="gmodelView_OnRender" swapped="yes"/>
-                        <signal name="unrealize" handler="gmodelView_Free" swapped="yes"/>
+                        <signal name="realize" handler="gmodelView_Init" swapped="no"/>
+                        <signal name="render" handler="gmodelView_OnRender" swapped="no"/>
+                        <signal name="resize" handler="gmodelView_Resize" swapped="no"/>
+                        <signal name="unrealize" handler="gmodelView_Free" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -112,17 +147,36 @@
                         <property name="can_focus">True</property>
                         <property name="shadow_type">in</property>
                         <child>
-                          <object class="GtkTreeView" id="configTree">
+                          <object class="GtkViewport">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <child internal-child="selection">
-                              <object class="GtkTreeSelection" id="configTreeSel">
-                                <property name="mode">multiple</property>
-                              </object>
-                            </child>
+                            <property name="can_focus">False</property>
                             <child>
-                              <object class="GtkTreeViewColumn" id="configModelView">
-                                <property name="title" translatable="yes">column</property>
+                              <object class="GtkExpander">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child type="label">
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">View</property>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -216,7 +270,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="use_underline">True</property>
-                            <property name="stock_id">gtk-cancel</property>
+                            <property name="stock_id">gtk-remove</property>
                             <signal name="clicked" handler="logBox_OnClear" swapped="no"/>
                           </object>
                           <packing>

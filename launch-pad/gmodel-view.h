@@ -14,6 +14,8 @@ typedef struct _GScene* PGScene;
 PGScene gsceneNew(GList *meshes);
 void gsceneFree(PGScene scene);
 
-void gmodelView_Init(GMainWin *win);
-void gmodelView_Free(GMainWin *win);
-gboolean gmodelView_OnRender(GMainWin *win);
+void gmodelView_Init(GtkGLArea *ctl);
+void gmodelView_Free(GtkGLArea *ctl);
+void gmodelView_Resize(GtkGLArea *ctl, gint cx, gint cy);
+gboolean gmodelView_OnRender(GtkGLArea *ctl, GdkGLContext *context);
+

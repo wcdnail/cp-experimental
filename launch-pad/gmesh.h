@@ -11,8 +11,8 @@ typedef struct _GVertex* PGVertex;
 struct _GMesh
 {
     GString  *name;
-    GArray *vertex; // GVertex
-    GArray  *index; // GLuint [2][]
+    GArray *vertex;
+    GArray  *index;
 };
 
 typedef struct _GMesh   GMesh;

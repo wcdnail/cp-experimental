@@ -6,6 +6,7 @@ enum _LogBoxMessageFlags
 {
     LOGBOX_MSG,
     LOGBOX_NOTE,
+    LOGBOX_ASSERT,
     LOGBOX_WARN,
     LOGBOX_ERROR,
 };

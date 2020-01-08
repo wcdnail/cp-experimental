@@ -12,8 +12,6 @@ struct _GMainWin
     GtkPaned                           *panRoot;
     GtkPaned                           *panView;
     GtkGLArea                        *modelView;
-    GtkTreeView                     *configTree;
-    GtkTreeSelection             *configTreeSel;
     GtkTextView                         *logBox;
     GtkToggleToolButton *logctlToggleScrollDown;
     GtkEntry           *cmdSingleCommandEditBox;

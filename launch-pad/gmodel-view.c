@@ -122,49 +122,68 @@ static void gmodel_view_init_startup_scene(void)
     }
 }
 
-void gmodelView_Init(GMainWin *win)
+void gmodelView_Init(GtkGLArea *ctl)
 {
     GError *error = NULL;
-    gtk_gl_area_make_current(win->modelView);
-    if ((error = gtk_gl_area_get_error(win->modelView)) != NULL) {
+    gtk_gl_area_make_current(ctl);
+    if ((error = gtk_gl_area_get_error(ctl)) != NULL) {
         logBoxTrace(LOGBOX_ERROR, "MODELVIEW init ERROR: [%d] %s\n", error->code, error->message);
         return;
     }
     logBoxTrace(LOGBOX_MSG, "Using OpenGL : %s\n", glGetString(GL_VERSION));
     logBoxTrace(LOGBOX_MSG, "GL vendor    : %s\n", glGetString(GL_VENDOR));
     logBoxTrace(LOGBOX_MSG, "GL renderer  : %s\n", glGetString(GL_RENDERER));
-    glClearColor(0.1, 0.39, 0.88, 1.0);
-    glColor3f(1.0, 1.0, 1.0);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-2, 2, -1.5, 1.5, 1, 40);
+
+    glClearColor(1, 1, 1, 1);
+    glEnable(GL_DEPTH_TEST);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0, 0, -3);
     glRotatef(50, 1, 0, 0);
-    glRotatef(70, 0, 1, 0);    
+    glRotatef(70, 0, 1, 0);
+
     gmodel_view_init_startup_scene();
 }
 
-void gmodelView_Free(GMainWin *win)
+void gmodelView_Free(GtkGLArea *ctl)
 {
     GError *error = NULL;
     gsceneFree(currentScene);
     currentScene = NULL;
-    gtk_gl_area_make_current(win->modelView);
-    if ((error = gtk_gl_area_get_error(win->modelView)) != NULL) {
+    gtk_gl_area_make_current(ctl);
+    if ((error = gtk_gl_area_get_error(ctl)) != NULL) {
         logBoxTrace(LOGBOX_ERROR, "GL FREE: [%d] %s\n", error->code, error->message);
         return;
     }
 }
 
-gboolean gmodelView_OnRender(GMainWin *win)
+void gmodelView_Resize(GtkGLArea *ctl, gint cx, gint cy)
+{
+    GLfloat aspect = cy ? (GLfloat)cx / (GLfloat)cy : (GLfloat)cx;
+    if (0) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glFrustum(-2.5, 2.5, -2.5/aspect, 2.5/aspect, 1, 10.0);
+    }
+    else {
+        glViewport(0, 0, cx, cy);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        if (cx <= cy) {
+            glOrtho(-2.5, 2.5, -2.5/aspect, 2.5/aspect, -10.0, 10.0);
+        } 
+        else {
+            glOrtho(-2.5*aspect, 2.5*aspect, -2.5, 2.5, -10.0, 10.0);
+        }
+    }
+}
+
+gboolean gmodelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Draw grid
-    glColor4f(1, 0, 0, 1);
+    glColor4f(0, 0, 0, 1);
     glBegin(GL_LINES);
     for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
         glVertex3f(i, 0, 2.5); glVertex3f(i, 0, -2.5);
@@ -173,11 +192,11 @@ gboolean gmodelView_OnRender(GMainWin *win)
     glEnd();
     // Test stuff
     glBegin(GL_TRIANGLE_STRIP);
-    glColor4f(1, 1, 1, 1); glVertex3f(0, 2, 0);
+    glColor4f(1, 0, 1, 1); glVertex3f(0, 2, 0);
     glColor4f(1, 0, 0, 1); glVertex3f(-1, 0, 1);
     glColor4f(0, 1, 0, 1); glVertex3f(1, 0, 1);
     glColor4f(0, 0, 1, 1); glVertex3f(0, 0, -1.4);
-    glColor4f(1, 1, 1, 1); glVertex3f(0, 2, 0);
+    glColor4f(1, 1, 0, 1); glVertex3f(0, 2, 0);
     glColor4f(1, 0, 0, 1); glVertex3f(-1, 0, 1);
     glEnd();    
     if (currentScene) {

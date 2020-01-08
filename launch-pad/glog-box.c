@@ -64,10 +64,11 @@ static void glog_put_text_ui(gint flags, gchar *title, GString *message)
         NULL);
     gtk_text_buffer_get_end_iter(mainLogBuffer, &iter);
     switch (flags) {
-    case LOGBOX_NOTE:  gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "italic", NULL); break;
-    case LOGBOX_WARN:  gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "warn_bg", "warn_fg", NULL); break;
-    case LOGBOX_ERROR: gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "error_bg", "error_fg", NULL); break;
-    default:           gtk_text_buffer_insert(mainLogBuffer, &iter, message->str, (gint)message->len);
+    case LOGBOX_ASSERT: gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", NULL); break;
+    case LOGBOX_NOTE:   gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "italic", NULL); break;
+    case LOGBOX_WARN:   gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "warn_bg", "warn_fg", NULL); break;
+    case LOGBOX_ERROR:  gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "error_bg", "error_fg", NULL); break;
+    default:            gtk_text_buffer_insert(mainLogBuffer, &iter, message->str, (gint)message->len);
     }
     if (mainLogScrollDown) {
         glog_scroll_to_end_ui();
