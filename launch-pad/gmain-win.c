@@ -88,7 +88,7 @@ static void gmain_win_init(GMainWin *win)
     // GTK Settings
     enum_gsettings_schemas();
     // Appearance
-    mainIcon = gdk_pixbuf_new_from_resource("/wcd/launchpad/mainicon", &error);
+    mainIcon = gdk_pixbuf_new_from_resource("/wcd/launchpad/icon-main", &error);
     if (mainIcon) {
         gtk_window_set_icon(GTK_WINDOW(win), mainIcon);
     }

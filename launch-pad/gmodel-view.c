@@ -28,8 +28,10 @@ void gmodelView_Free(GtkGLArea *ctl)
 
 gboolean gmodelView_OnRender(GtkGLArea *ctl, gpointer user)
 {
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
     glClearColor(0.7, 0.9, 1, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glFlush();
     return FALSE;
 }

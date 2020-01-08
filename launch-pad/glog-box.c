@@ -74,30 +74,29 @@ static void glog_put_text_ui(gint flags, gchar *title, GString *message)
     }
 }
 
-#define _MSG_HEAD_MAX_LEN 128
+#define _MSG_TIMEBUF_MAX_LEN 64
+#define _MSG_HEAD_MAX_LEN   128
 
 static void glog_make_msg_title(gchar *title) 
 {
     gint64       now = g_get_real_time();
     time_t   nowsecs = (time_t)(now / 1000000);
     struct tm *nowtm = localtime(&nowsecs);
-    gchar tmbuf[128] = { 0 };
-    strftime(tmbuf, sizeof(tmbuf), "%H:%M:%S", nowtm);
-    g_snprintf(title, _MSG_HEAD_MAX_LEN, " %s.%06d: ", tmbuf, (gint)((now / 1000000) % 1000000));
+    gchar tmbuf[_MSG_TIMEBUF_MAX_LEN] = { 0 };
+    strftime(tmbuf, _MSG_TIMEBUF_MAX_LEN, "%H:%M:%S", nowtm);
+    g_snprintf(title, _MSG_HEAD_MAX_LEN, "  %s.%06d:  ", tmbuf, (gint)((now / 1000000) % 1000000));
 }
 
 static void glog_trace_impl(gint flags, const gchar *format, va_list ap)
 {
     gchar title[_MSG_HEAD_MAX_LEN] = { 0 };
-    GString *message = g_string_new(NULL);
+    GString *message = g_string_new("  ");
     if (!message) {
         return ;
     }
-    g_string_vprintf(message, format, ap);
+    g_string_append_vprintf(message, format, ap);
     glog_make_msg_title(title);
-#ifdef _DEBUG
     g_print("%s%s", title, message->str);
-#endif    
     if (mainLogBox) {
         glog_put_text_ui(flags, title, message);
     }

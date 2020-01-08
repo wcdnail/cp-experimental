@@ -1,5 +1,3 @@
 #pragma once
 
-#include <stddef.h>
-
-guchar* fileRead(const char *pathname, gssize *readed);
+guchar* fileRead(const gchar *pathname, gssize *readed);

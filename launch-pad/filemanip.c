@@ -1,7 +1,8 @@
 #include <gtk/gtk.h>
 #include "filemanip.h"
+#include "glog-box.h"
 
-guchar* fileRead(const char *pathname, gssize *readed)
+guchar* fileRead(const gchar *pathname, gssize *readed)
 {
     gssize           readv = 0;
     goffset       filesize = 0;
@@ -45,7 +46,7 @@ guchar* fileRead(const char *pathname, gssize *readed)
     }
     goto noError;
 onError:
-    g_print("FILEREAD [%s] %s ERROR: [%d] %s\n", 
+    logBoxTrace(LOGBOX_ERROR, "FILEREAD [%s] %s ERROR: [%d] %s\n", 
         pathname, 
         errorTitle,
         error ? error->code : errno, 
