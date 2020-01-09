@@ -13,6 +13,7 @@
     <property name="icon_name">start-here</property>
     <property name="gravity">static</property>
     <property name="has_resize_grip">True</property>
+    <signal name="configure-event" handler="mainwin_onConfigureEvent" swapped="no"/>
     <signal name="map" handler="mainwin_OnMap" swapped="no"/>
     <signal name="unmap" handler="mainwin_OnUnmap" swapped="no"/>
     <child>
@@ -42,142 +43,137 @@
             <property name="position">600</property>
             <property name="position_set">True</property>
             <property name="wide_handle">True</property>
+            <signal name="notify::position" handler="pan_OnPosSet" object="GMainWin" swapped="no"/>
             <child>
-              <object class="GtkViewport">
+              <object class="GtkPaned" id="panView">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="shadow_type">none</property>
+                <property name="can_focus">True</property>
+                <property name="position">600</property>
+                <property name="position_set">True</property>
+                <property name="wide_handle">True</property>
+                <signal name="notify::position" handler="pan_OnPosSet" object="GMainWin" swapped="no"/>
                 <child>
-                  <object class="GtkPaned" id="panView">
+                  <object class="GtkBox" id="rootViewBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="position">500</property>
-                    <property name="position_set">True</property>
-                    <property name="wide_handle">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkBox" id="rootViewBox">
+                      <object class="GtkBox" id="modelViewTopBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox" id="modelViewTopBox">
+                          <object class="GtkToolbar" id="commonTools">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
-                              <object class="GtkToolbar" id="commonTools">
+                              <object class="GtkToolButton" id="showSummaryInfo">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkToolButton" id="showSummaryInfo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="stock_id">gtk-info</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
-                                  </packing>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkToolbar" id="modelViewTools">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkToolButton" id="modelViewGoHome">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="stock_id">gtk-home</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="homogeneous">True</property>
-                                  </packing>
-                                </child>
+                                <property name="use_underline">True</property>
+                                <property name="stock_id">gtk-info</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
+                                <property name="homogeneous">True</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolbar" id="modelViewTools">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkToolButton" id="modelViewGoHome">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="stock_id">gtk-home</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="homogeneous">True</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkGLArea" id="modelView">
-                            <property name="visible">True</property>
-                            <property name="app_paintable">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="has_alpha">True</property>
-                            <property name="has_depth_buffer">True</property>
-                            <property name="use_es">True</property>
-                            <signal name="realize" handler="gmodelView_Init" swapped="no"/>
-                            <signal name="render" handler="gmodelView_OnRender" swapped="no"/>
-                            <signal name="resize" handler="gmodelView_Resize" swapped="no"/>
-                            <signal name="unrealize" handler="gmodelView_Free" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="resize">False</property>
-                        <property name="shrink">True</property>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="rootConfBox">
+                      <object class="GtkGLArea" id="modelView">
                         <property name="visible">True</property>
+                        <property name="app_paintable">True</property>
                         <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkScrolledWindow" id="scrolledConfBox">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="shadow_type">in</property>
-                            <child>
-                              <object class="GtkViewport">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
+                        <property name="has_alpha">True</property>
+                        <property name="has_depth_buffer">True</property>
+                        <property name="use_es">True</property>
+                        <signal name="realize" handler="gmodelView_Init" swapped="no"/>
+                        <signal name="render" handler="gmodelView_OnRender" swapped="no"/>
+                        <signal name="resize" handler="gmodelView_Resize" swapped="no"/>
+                        <signal name="unrealize" handler="gmodelView_Free" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="resize">True</property>
-                        <property name="shrink">True</property>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
+                  <packing>
+                    <property name="resize">False</property>
+                    <property name="shrink">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="rootConfBox">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkScrolledWindow" id="scrolledConfBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="shadow_type">in</property>
+                        <child>
+                          <object class="GtkViewport">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
+                  </packing>
                 </child>
               </object>
               <packing>
-                <property name="resize">True</property>
+                <property name="resize">False</property>
                 <property name="shrink">True</property>
               </packing>
             </child>

@@ -16,8 +16,8 @@ static GString *currentSettingsPathname = NULL;
 #define _DEF_WND_TITLE      "LaunchPad 1.0"
 #define _DEF_WND_WIDTH      1024
 #define _DEF_WND_HEIGHT     768
-#define _DEF_PAN_ROOT_POS   500
-#define _DEF_PAN_VIEW_POS   220
+#define _DEF_PAN_ROOT_CY    300
+#define _DEF_PAN_VIEW_CX    220
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -43,8 +43,8 @@ static void app_settings_set_property(GObject *gobject, guint prop_id, const GVa
     case PROP_APPSETTING_ID:             self->id = g_value_get_uint(value); break;
     case PROP_APPSETTING_RECT:           grect_set_rect(self->appRect, (PGRect)g_value_get_object(value)); break;
     case PROP_APPSETTING_ISMAX:          self->appIsMaximized = g_value_get_boolean(value); break;
-    case PROP_APPSETTING_PAN_ROOT_POS:   self->panRootPos = g_value_get_int(value); break;
-    case PROP_APPSETTING_PAN_VIEW_POS:   self->panViewPos = g_value_get_int(value); break;
+    case PROP_APPSETTING_LOG_CY:   self->logPanelCy = g_value_get_int(value); break;
+    case PROP_APPSETTING_CONF_CX:   self->confPanelCx = g_value_get_int(value); break;
     case PROP_APPSETTING_TITLE: {
         g_free((gpointer)self->appTitle);
         self->appTitle = g_value_dup_string(value);
@@ -63,8 +63,8 @@ static void app_settings_get_property(GObject *gobject, guint prop_id, GValue *v
     case PROP_APPSETTING_ID:             g_value_set_uint(value, self->id); break;
     case PROP_APPSETTING_RECT:           g_value_set_object(value, self->appRect); break;
     case PROP_APPSETTING_ISMAX:          g_value_set_boolean(value, self->appIsMaximized); break;
-    case PROP_APPSETTING_PAN_ROOT_POS:   g_value_set_int(value, self->panRootPos); break;
-    case PROP_APPSETTING_PAN_VIEW_POS:   g_value_set_int(value, self->panViewPos); break;
+    case PROP_APPSETTING_LOG_CY:   g_value_set_int(value, self->logPanelCy); break;
+    case PROP_APPSETTING_CONF_CX:   g_value_set_int(value, self->confPanelCx); break;
     case PROP_APPSETTING_TITLE:          g_value_set_string(value, self->appTitle); break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, pspec);
@@ -89,8 +89,8 @@ static void app_settings_class_init(AppSettingsClass *cls)
     g_object_class_install_property(gobject, PROP_APPSETTING_TITLE, g_param_spec_string("appTitle", "AppTitle", "", NULL, G_PARAM_READWRITE));
     g_object_class_install_property(gobject, PROP_APPSETTING_RECT, g_param_spec_object("appRect", "AppRect", "", grect_get_type(), G_PARAM_READWRITE));
     g_object_class_install_property(gobject, PROP_APPSETTING_ISMAX, g_param_spec_boolean("appIsMaximized", "AppIsMaximized", "", FALSE, G_PARAM_READWRITE));
-    g_object_class_install_property(gobject, PROP_APPSETTING_PAN_ROOT_POS, g_param_spec_int("panRootPos", "PanRootPos", "", 0, G_MAXINT, 0, G_PARAM_READWRITE));
-    g_object_class_install_property(gobject, PROP_APPSETTING_PAN_VIEW_POS, g_param_spec_int("panViewPos", "PanViewPos", "", 0, G_MAXINT, 0, G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, PROP_APPSETTING_LOG_CY, g_param_spec_int("logPanelCy", "LogPanelCy", "", 0, G_MAXINT, 0, G_PARAM_READWRITE));
+    g_object_class_install_property(gobject, PROP_APPSETTING_CONF_CX, g_param_spec_int("confPanelCx", "ConfigPanelCx", "", 0, G_MAXINT, 0, G_PARAM_READWRITE));
 }
 
 static void app_settings_init(PAppSettings self)
@@ -99,8 +99,8 @@ static void app_settings_init(PAppSettings self)
     self->appTitle = g_strdup(_DEF_WND_TITLE);
     self->appRect = grect_new_size(_DEF_WND_WIDTH, _DEF_WND_HEIGHT);
     self->appIsMaximized = FALSE;
-    self->panRootPos = _DEF_PAN_ROOT_POS;
-    self->panViewPos = _DEF_PAN_VIEW_POS;
+    self->logPanelCy = _DEF_PAN_ROOT_CY;
+    self->confPanelCx = _DEF_PAN_VIEW_CX;
     grect_put_to_center_of_screen(self->appRect);
 }
 
@@ -240,8 +240,6 @@ void appSettingsOnWindowInit(GMainWin *win)
     if (settings->appIsMaximized) {
         gtk_window_maximize(GTK_WINDOW(win));
     }
-    gtk_paned_set_position(win->panRoot, settings->panRootPos);
-    gtk_paned_set_position(win->panView, settings->panViewPos);
     gtk_toggle_tool_button_set_active(win->logctlToggleScrollDown, TRUE);
 }
 
@@ -254,7 +252,5 @@ void appSettingsOnWindowClose(GMainWin *win)
         gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), &rcTemp.x, &rcTemp.y, &rcTemp.cx, &rcTemp.cy);
         grect_set_rect(settings->appRect, &rcTemp);
     }
-    settings->panRootPos = gtk_paned_get_position(win->panRoot);
-    settings->panViewPos = gtk_paned_get_position(win->panView);
 }
 

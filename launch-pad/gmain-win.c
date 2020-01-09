@@ -13,8 +13,8 @@ G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW);
 static void mainwin_OnDispose(GObject *gobject);
 static void mainwin_OnMap(GMainWin *win, gpointer user);
 static void mainwin_OnUnmap(GMainWin *win, gpointer user);
-//static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user);
-//static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpointer user);
+static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user);
+static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpointer user);
 
 static void gmain_win_class_init(GMainWinClass *cls)
 {
@@ -33,8 +33,8 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnMap);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnUnmap);
 
-    //gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_onConfigureEvent);
-    //gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), pan_OnPosSet);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_onConfigureEvent);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), pan_OnPosSet);
     
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnToggleScrollDown);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnClear);
@@ -134,29 +134,31 @@ static void mainwin_OnUnmap(GMainWin *win, gpointer user)
     appSettingsOnWindowClose(win);
 }
 
-/*
-static void mainwin_checkPanPos(GMainWin *win)
-{
-    PAppSettings settings = appSettings();
-    gtk_paned_set_position(win->panRoot, settings->panRootPos);
-    gtk_paned_set_position(win->panView, settings->panViewPos);
-}
-
 static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user) 
 {
     GtkPaned *panctl = GTK_PANED(gobject);
     GMainWin    *win = GMAIN_WIN(user);
-    gint       *tpos = win->panRoot == panctl ? &appSettings()->panRootPos : &appSettings()->panViewPos;
-    gint        npos = gtk_paned_get_position(panctl);
-    logBoxTrace(LOGBOX_MSG, "%s: %d\n", win->panRoot == panctl ? "ROOT" : "VIEW", npos);
-    //*tpos = npos;
-    gtk_paned_set_position(panctl, *tpos);
+    gint      panpos = gtk_paned_get_position(panctl);
+    gint        side;
+    if (win->panRoot == panctl) {
+        gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, NULL, &side);
+        appSettings()->logPanelCy = side - panpos;
+    }
+    else {
+        gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, &side, NULL);
+        appSettings()->confPanelCx = side - panpos;
+    }
+}
+
+static void mainwin_adjustPanelSize(GMainWin *win, gint cx, gint cy)
+{
+    PAppSettings settings = appSettings();
+    gtk_paned_set_position(win->panRoot, cy - settings->logPanelCy);
+    gtk_paned_set_position(win->panView, cx - settings->confPanelCx);
 }
 
 static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpointer user)
 {
-    logBoxTrace(LOGBOX_MSG, "CONF: %dx%d\n", event->configure.width, event->configure.height);
-    mainwin_checkPanPos(GMAIN_WIN(widget));
+    mainwin_adjustPanelSize(GMAIN_WIN(widget), event->configure.width, event->configure.height);
     return (FALSE);
 }
-*/
