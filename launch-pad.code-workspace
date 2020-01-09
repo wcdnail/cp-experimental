@@ -13,7 +13,8 @@
 		"files.associations": {
 			"filemanip.h": "c",
 			"gfile-stl.h": "c",
-			"gl.h": "c"
+			"gl.h": "c",
+			"glog-box.h": "c"
 		}
 	}
 }

@@ -55,24 +55,42 @@ add_custom_command(
 
 add_custom_target(${RESOURCES_CT} ALL DEPENDS ${RESOURCES_PN} ${RESOURCES_H})
 
-#set(SCHEMA_CT "gschemas.compiled")
-#set(SCHEMA_PN "${CMAKE_CURRENT_SOURCE_DIR}/${SCHEMA_CT}")
-#
-#add_custom_command(
-#    OUTPUT "${SCHEMA_PN}"
-#    COMMAND glib-compile-schemas
-#    ARGS --strict
-#         --targetdir=${CMAKE_CURRENT_SOURCE_DIR}/
-#         ${CMAKE_CURRENT_SOURCE_DIR}/.
-#    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/wcd.launch.pad.gschema.xml
-#)
-#
-#add_custom_target(${SCHEMA_CT} ALL DEPENDS ${SCHEMA_PN})
+set(SCHEMA_CT "gschemas.compiled")
+set(SCHEMA_PN "${CMAKE_CURRENT_SOURCE_DIR}/${SCHEMA_CT}")
+
+add_custom_command(
+    OUTPUT "${SCHEMA_PN}"
+    COMMAND glib-compile-schemas
+    ARGS --strict
+         --targetdir=${CMAKE_CURRENT_SOURCE_DIR}/
+         ${CMAKE_CURRENT_SOURCE_DIR}/.
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/wcd.launch.pad.gschema.xml
+)
+
+add_custom_target(${SCHEMA_CT} ALL DEPENDS ${SCHEMA_PN})
 
 file(GLOB_RECURSE CXX_SRCS *.cpp)
 file(GLOB_RECURSE C_SRCS *.c)
 
-add_executable(${PROJECT_NAME} "${C_SRCS} ${CXX_SRCS}")
+if (WIN32)
+    set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
+    set(OS_SPEC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/winres.rc)
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    else()
+        if (MSVC) 
+        else()
+            add_link_options("-Wl,--subsystem,windows")
+        endif()
+    endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+else()
+    set(OS_SPEC_SRCS )
+endif()
+
+add_executable(${PROJECT_NAME} 
+    ${C_SRCS} 
+    ${CXX_SRCS} 
+    ${OS_SPEC_SRCS}
+)
 
 target_link_libraries(${PROJECT_NAME} 
     ${GTK3_LIBRARIES} 
@@ -81,11 +99,13 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 message( "# -----------------------------------------------------------------" )
-message( "Project         : [${CMAKE_BUILD_TYPE}] ${PROJECT_NAME}" )
-message( "Current dir     : ${CMAKE_CURRENT_SOURCE_DIR}" )
-message( "Current bin dir : ${CMAKE_CURRENT_BINARY_DIR}" )
-message( "Compiler family : ${CMAKE_C_COMPILER_ID}" )
-message( "Target Arch     : ${TPLATFORM_ARCHNAME}" )
-message( "Compile flags   : ${CMAKE_C_FLAGS}" )
-message( "CompileXX flags : ${CMAKE_CXX_FLAGS}" )
-message( "Linker flags    : ${CMAKE_LINK_FLAGS}" )
+message( "Project           : [${CMAKE_BUILD_TYPE}] ${PROJECT_NAME}" )
+message( "Current dir       : ${CMAKE_CURRENT_SOURCE_DIR}" )
+message( "Current bin dir   : ${CMAKE_CURRENT_BINARY_DIR}" )
+message( "Compiler family   : ${CMAKE_C_COMPILER_ID}" )
+message( "Target Arch       : ${TPLATFORM_ARCHNAME}" )
+message( "Compile flags     : ${CMAKE_C_FLAGS}" )
+message( "CompileXX flags   : ${CMAKE_CXX_FLAGS}" )
+message( "ResCompiler       : ${CMAKE_RC_COMPILER}" )
+message( "ResCompiler flags : ${CMAKE_RC_FLAGS}" )
+message( "Linker flags      : ${CMAKE_LINK_FLAGS}" )

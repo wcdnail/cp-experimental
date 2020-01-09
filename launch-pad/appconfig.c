@@ -1,6 +1,5 @@
 #include <gtk/gtk.h>
 #include "appconfig.h"
-#include "filemanip.h"
 #include "glaunch-pad.h"
 #include "dbg-trace.h"
 #include <glib-object.h>
@@ -9,11 +8,16 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#define _DEF_APPSETTINGS_PATHNAME _DEF_APP_ID "-settings.json"
+static PAppSettings     currentSettings = NULL;
+static GString *currentSettingsPathname = NULL;
 
-#define _DEF_WND_TITLE  "LaunchPad 1.0"
-#define _DEF_WND_WIDTH  1024
-#define _DEF_WND_HEIGHT 768
+//---------------------------------------------------------------------------------------------------------------------
+
+#define _DEF_WND_TITLE      "LaunchPad 1.0"
+#define _DEF_WND_WIDTH      1024
+#define _DEF_WND_HEIGHT     768
+#define _DEF_PAN_ROOT_POS   500
+#define _DEF_PAN_VIEW_POS   220
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -95,48 +99,74 @@ static void app_settings_init(PAppSettings self)
     self->appTitle = g_strdup(_DEF_WND_TITLE);
     self->appRect = grect_new_size(_DEF_WND_WIDTH, _DEF_WND_HEIGHT);
     self->appIsMaximized = FALSE;
-    self->panRootPos = 600;
-    self->panViewPos = 700;
+    self->panRootPos = _DEF_PAN_ROOT_POS;
+    self->panViewPos = _DEF_PAN_VIEW_POS;
     grect_put_to_center_of_screen(self->appRect);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static PAppSettings  currentSettings = NULL;
-static const char settingsPathname[] = _DEF_APPSETTINGS_PATHNAME;
+#define _DEF_APPSETTINGS_PATHNAME _DEF_APP_ID "-settings.json"
+
+static void app_settings_free_current_pathname(void) 
+{
+    if (currentSettingsPathname) {
+        g_string_free(currentSettingsPathname, TRUE);
+        currentSettingsPathname = NULL;
+    }
+}
+
+static gboolean app_settings_init_current_pathname(void) 
+{
+    if (!currentSettingsPathname) {
+        currentSettingsPathname = g_string_new(g_get_user_config_dir());
+        if (currentSettingsPathname) {
+            g_string_append(currentSettingsPathname, "/" _DEF_APP_ID);
+            if (-1 == g_mkdir_with_parents(currentSettingsPathname->str, 0755)) {
+                app_settings_free_current_pathname();
+                return (FALSE);
+            }
+            g_string_append(currentSettingsPathname, "/current-settings.json");
+        }
+    }
+    return (NULL != currentSettingsPathname);
+}
 
 PAppSettings appSettings(void)
 {
-    const char *errorTitle = NULL;
-    GError          *error = NULL;
-    guchar        *jsonstr = NULL;
+    const gchar *errorTitle = NULL;
+    GError           *error = NULL;
+    gchar          *jsonstr = NULL;
     if (!currentSettings) {
-        gssize readed = -1;
-        jsonstr = fileRead(settingsPathname, &readed);
-        if(jsonstr) {
-            currentSettings = (PAppSettings)json_gobject_from_data(APPSETTINGS_TYPE_OBJECT, (gchar*)jsonstr, readed, &error);
+        gsize readed = -1;
+        if (!app_settings_init_current_pathname()) {
+            errorTitle = "pathname init ERROR";
+            goto onError;
+        }
+        if (g_file_get_contents(currentSettingsPathname->str, &jsonstr, &readed, &error)) {
+            currentSettings = (PAppSettings)json_gobject_from_data(APPSETTINGS_TYPE_OBJECT, jsonstr, readed, &error);
             if (!currentSettings) {
-                errorTitle = "object from json";
+                errorTitle = "deserializing object from json FAILURE";
                 goto onError;
             }
         }
         if (!currentSettings) {
-            errorTitle = "loading";
+            errorTitle = "loading ERROR";
             goto onError;
         }
     }
     goto noError;
 onError:
     if (error) {
-        g_print("SETTINGS [%s] %s ERROR: [%d] %s. Using defaults...\n", 
-            settingsPathname, 
+        g_print("SETTINGS [%s] %s: [%d] %s. Using defaults...\n", 
+            currentSettingsPathname->str, 
             errorTitle ? errorTitle : "unknown",
             error->code, 
             error->message);
     }
     else {
-      g_print("SETTINGS [%s] %s ERROR! Using defaults...\n", 
-            settingsPathname, 
+      g_print("SETTINGS [%s] %s! Using defaults...\n", 
+            currentSettingsPathname->str, 
             errorTitle ? errorTitle : "unknown");
     }
     if (jsonstr) {
@@ -149,6 +179,7 @@ noError:
 
 void appSettingsFree(void)
 {
+    app_settings_free_current_pathname();
     if (currentSettings) {
         g_object_unref(currentSettings);
     }
@@ -172,22 +203,26 @@ void appSettingsSave(void)
     }
 #ifdef _DEBUG_SETTINGS
     g_print("SETTINGS [%s]:\n%s\n", settingsPathname, settingsJson);
-#endif        
-    if (!g_file_set_contents(settingsPathname, settingsJson, settingsJsonLen, &error)) {
+#endif
+    if (!app_settings_init_current_pathname()) {
+        errorTitle = "pathname init ERROR";
+        goto onError;
+    }
+    if (!g_file_set_contents(currentSettingsPathname->str, settingsJson, settingsJsonLen, &error)) {
         goto onError;    
     }
     goto noError;
 onError:
     if (error) {
         g_print("SETTINGS [%s] %s: [%d] %s\n", 
-            settingsPathname, 
+            currentSettingsPathname->str, 
             errorTitle,
             error->code, 
             error->message);
     }
     else {
         g_print("SETTINGS [%s] %s!\n", 
-            settingsPathname, 
+            currentSettingsPathname->str, 
             errorTitle);
     }
 noError:       
@@ -207,7 +242,6 @@ void appSettingsOnWindowInit(GMainWin *win)
     }
     gtk_paned_set_position(win->panRoot, settings->panRootPos);
     gtk_paned_set_position(win->panView, settings->panViewPos);
-    // TODO: configure
     gtk_toggle_tool_button_set_active(win->logctlToggleScrollDown, TRUE);
 }
 
@@ -224,4 +258,3 @@ void appSettingsOnWindowClose(GMainWin *win)
     settings->panViewPos = gtk_paned_get_position(win->panView);
 }
 
-//---------------------------------------------------------------------------------------------------------------------

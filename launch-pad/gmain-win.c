@@ -13,6 +13,8 @@ G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW);
 static void mainwin_OnDispose(GObject *gobject);
 static void mainwin_OnMap(GMainWin *win, gpointer user);
 static void mainwin_OnUnmap(GMainWin *win, gpointer user);
+//static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user);
+//static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpointer user);
 
 static void gmain_win_class_init(GMainWinClass *cls)
 {
@@ -30,6 +32,10 @@ static void gmain_win_class_init(GMainWinClass *cls)
 
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnMap);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnUnmap);
+
+    //gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_onConfigureEvent);
+    //gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), pan_OnPosSet);
+    
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnToggleScrollDown);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnClear);
     
@@ -68,7 +74,7 @@ static gboolean test_log_box(gpointer data)
     logBoxTrace(LOGBOX_MSG, "%03d: Message message message message message\n", j++);
     logBoxTrace(LOGBOX_NOTE, "%03d: Note Message\n", j++);
     logBoxTrace(LOGBOX_WARN, "%03d: Warning Message message message message\n", j++);
-    logBoxTrace(LOGBOX_ERROR, "%03d: Error Message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message message\n", j++);
+    logBoxTrace(LOGBOX_ERROR, "%03d: Error Message message message message message message\n", j++);
     return TRUE;
 }
 #endif
@@ -109,6 +115,10 @@ GMainWin *mainWinNew(GLaunchPad *app)
     return g_object_new(GMAIN_WIN_TYPE, "application", app, NULL);
 }
 
+void mainWinOpen(GMainWin *win, GFile *file)
+{
+}
+
 static void mainwin_OnDispose(GObject *gobject)
 {
     GMainWin *win = GMAIN_WIN(gobject);
@@ -124,6 +134,29 @@ static void mainwin_OnUnmap(GMainWin *win, gpointer user)
     appSettingsOnWindowClose(win);
 }
 
-void mainWinOpen(GMainWin *win, GFile *file)
+/*
+static void mainwin_checkPanPos(GMainWin *win)
 {
+    PAppSettings settings = appSettings();
+    gtk_paned_set_position(win->panRoot, settings->panRootPos);
+    gtk_paned_set_position(win->panView, settings->panViewPos);
 }
+
+static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user) 
+{
+    GtkPaned *panctl = GTK_PANED(gobject);
+    GMainWin    *win = GMAIN_WIN(user);
+    gint       *tpos = win->panRoot == panctl ? &appSettings()->panRootPos : &appSettings()->panViewPos;
+    gint        npos = gtk_paned_get_position(panctl);
+    logBoxTrace(LOGBOX_MSG, "%s: %d\n", win->panRoot == panctl ? "ROOT" : "VIEW", npos);
+    //*tpos = npos;
+    gtk_paned_set_position(panctl, *tpos);
+}
+
+static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpointer user)
+{
+    logBoxTrace(LOGBOX_MSG, "CONF: %dx%d\n", event->configure.width, event->configure.height);
+    mainwin_checkPanPos(GMAIN_WIN(widget));
+    return (FALSE);
+}
+*/

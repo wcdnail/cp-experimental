@@ -4,7 +4,7 @@
 #include "glog-box.h"
 #include "gfile-stl.h"
 
-static PGScene      currentScene = NULL;
+static PGScene currentScene = NULL;
 
 PGScene gsceneNew(GList *meshes)
 {
@@ -190,6 +190,7 @@ gboolean gmodelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
         glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
     }
     glEnd();
+#if 0    
     // Test stuff
     glBegin(GL_TRIANGLE_STRIP);
     glColor4f(1, 0, 1, 1); glVertex3f(0, 2, 0);
@@ -198,7 +199,8 @@ gboolean gmodelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
     glColor4f(0, 0, 1, 1); glVertex3f(0, 0, -1.4);
     glColor4f(1, 1, 0, 1); glVertex3f(0, 2, 0);
     glColor4f(1, 0, 0, 1); glVertex3f(-1, 0, 1);
-    glEnd();    
+    glEnd();
+#endif    
     if (currentScene) {
         if (currentScene->meshes) {
             g_list_foreach(currentScene->meshes, gmeshRender, NULL);
