@@ -2,6 +2,7 @@
 #include "appconfig.h"
 #include "glaunch-pad.h"
 #include "dbg-trace.h"
+#include "glog-box.h"
 #include <glib-object.h>
 #include <json-glib/json-glib.h>
 #include <json-glib/json-gobject.h>
@@ -158,14 +159,14 @@ PAppSettings appSettings(void)
     goto noError;
 onError:
     if (error) {
-        g_print("SETTINGS [%s] %s: [%d] %s. Using defaults...\n", 
+        g_print("  SETTINGS [%s] %s: [%d] %s. Using defaults...\n", 
             currentSettingsPathname->str, 
             errorTitle ? errorTitle : "unknown",
             error->code, 
             error->message);
     }
     else {
-      g_print("SETTINGS [%s] %s! Using defaults...\n", 
+      g_print("  SETTINGS [%s] %s! Using defaults...\n", 
             currentSettingsPathname->str, 
             errorTitle ? errorTitle : "unknown");
     }
@@ -201,8 +202,8 @@ void appSettingsSave(void)
         errorTitle = "json serialization failed";
         goto onError;
     }
-#ifdef _DEBUG_SETTINGS
-    g_print("SETTINGS [%s]:\n%s\n", settingsPathname, settingsJson);
+#ifdef _DEBUG
+    g_print("  SETTINGS [%s]:\n%s\n", currentSettingsPathname->str, settingsJson);
 #endif
     if (!app_settings_init_current_pathname()) {
         errorTitle = "pathname init ERROR";
@@ -214,14 +215,14 @@ void appSettingsSave(void)
     goto noError;
 onError:
     if (error) {
-        g_print("SETTINGS [%s] %s: [%d] %s\n", 
+        g_print("  SETTINGS [%s] %s: [%d] %s\n", 
             currentSettingsPathname->str, 
             errorTitle,
             error->code, 
             error->message);
     }
     else {
-        g_print("SETTINGS [%s] %s!\n", 
+        g_print("  SETTINGS [%s] %s!\n", 
             currentSettingsPathname->str, 
             errorTitle);
     }
@@ -253,4 +254,3 @@ void appSettingsOnWindowClose(GMainWin *win)
         grect_set_rect(settings->appRect, &rcTemp);
     }
 }
-

@@ -4,12 +4,12 @@
 #include "filemanip.h"
 #include "glog-box.h"
 
-PGMesh gfileLoadSTL(const gchar *pathname) 
+PGMesh stlLoadFile(const gchar *pathname) 
 {
     return NULL;
 }
 
-PGMesh gresourseLoadSTLA(const gchar *pathname)
+PGMesh stlLoadResource(const gchar *pathname)
 {
     const gchar *errorTitle = "unknown";
     GError           *error = NULL;
@@ -20,7 +20,7 @@ PGMesh gresourseLoadSTLA(const gchar *pathname)
         errorTitle = "resource open";
         goto onError;
     }
-    result = gloadSTLA(pathname, istm);
+    result = stlLoadAsc(pathname, istm);
     goto noError;
 onError:
     logBoxTrace(LOGBOX_ERROR, "LOADSTLRES [%s] %s ERROR: [%d] %s\n", 
@@ -104,7 +104,7 @@ static gboolean astl_get_vertex(GLfloat *vdata, const gchar *arg)
     return TRUE;
 }
 
-PGMesh gloadSTLA(const gchar *pathname, GInputStream *istm) 
+PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm) 
 {
     const gchar  *errorTitle = "unknown";
     const gchar *parserTitle = "invalid parser state";
@@ -133,7 +133,7 @@ PGMesh gloadSTLA(const gchar *pathname, GInputStream *istm)
     }
     if (0 != g_ascii_strncasecmp(line, "solid", 5)) {
         g_object_unref(idata);
-        return gloadSTLB(pathname, istm);
+        return stlLoadBin(pathname, istm);
     }
     result = gmeshNew(pathname);
     if (!result) {
@@ -208,7 +208,7 @@ noError:
     return result;
 }
 
-PGMesh gloadSTLB(const gchar *pathname, GInputStream *istm)
+PGMesh stlLoadBin(const gchar *pathname, GInputStream *istm)
 {
     return NULL;
 }

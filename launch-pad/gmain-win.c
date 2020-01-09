@@ -19,9 +19,7 @@ static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpo
 static void gmain_win_class_init(GMainWinClass *cls)
 {
     G_OBJECT_CLASS(cls)->dispose = mainwin_OnDispose;
-
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(cls), "/wcd/launchpad/launch-pad.ui");
-
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, panRoot);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, panView);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, modelView);
@@ -29,20 +27,17 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, logctlToggleScrollDown);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdSingleCommandEditBox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdRunSingleCommand);
-
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnMap);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnUnmap);
-
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_onConfigureEvent);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), pan_OnPosSet);
-    
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnToggleScrollDown);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnClear);
-    
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Init);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Free);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_Resize);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), gmodelView_OnRender);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_Init);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_Free);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_Resize);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_OnRender);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_OnEvent);
 }
 
 static void enum_gsettings_schemas(void) 
@@ -139,7 +134,7 @@ static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user)
     GtkPaned *panctl = GTK_PANED(gobject);
     GMainWin    *win = GMAIN_WIN(user);
     gint      panpos = gtk_paned_get_position(panctl);
-    gint        side;
+    gint        side = 0;
     if (win->panRoot == panctl) {
         gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, NULL, &side);
         appSettings()->logPanelCy = side - panpos;

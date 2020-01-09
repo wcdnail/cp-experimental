@@ -6,7 +6,7 @@
 
 static PGScene currentScene = NULL;
 
-PGScene gsceneNew(GList *meshes)
+PGScene sceneNew(GList *meshes)
 {
     const gchar *errorTitle = NULL;
     PGScene        resScene = NULL; 
@@ -23,13 +23,13 @@ PGScene gsceneNew(GList *meshes)
     goto noError;
 onError:
     logBoxTrace(LOGBOX_ERROR, "MODELVEW %s ERROR: [%d] %s\n", errorTitle, errno, strerror(errno));
-    gsceneFree(resScene);
+    sceneFree(resScene);
     resScene = NULL;
 noError:
     return resScene;
 }
 
-void gsceneFree(PGScene scene)
+void sceneFree(PGScene scene)
 {
     if (scene) {
         g_list_foreach(scene->meshes, gmeshFree, NULL);
@@ -40,7 +40,7 @@ void gsceneFree(PGScene scene)
 }
 
 #if 0
-static guint gmodel_view_create_shader(int shader_type, const char *source)
+static guint model_view_create_shader(int shader_type, const char *source)
 {
     int   status = 0;
     guint shader = glCreateShader(shader_type);
@@ -61,17 +61,17 @@ static guint gmodel_view_create_shader(int shader_type, const char *source)
     return shader;
 }
 
-static void gmodel_view_init_shaders(void)
+static void model_view_init_shaders(void)
 {
     GBytes     *source = NULL;
     int         status = 0;
     guint vertexShader = 0;
     guint   fragShader = 0;
     source = g_resources_lookup_data("/wcd/launchpad/def-shader-vertex", 0, NULL);
-    vertexShader = gmodel_view_create_shader(GL_VERTEX_SHADER, g_bytes_get_data(source, NULL));
+    vertexShader = model_view_create_shader(GL_VERTEX_SHADER, g_bytes_get_data(source, NULL));
     g_bytes_unref(source);
     source = g_resources_lookup_data("/wcd/launchpad/def-shader-fragment", 0, NULL);
-    fragShader = gmodel_view_create_shader(GL_FRAGMENT_SHADER, g_bytes_get_data(source, NULL));
+    fragShader = model_view_create_shader(GL_FRAGMENT_SHADER, g_bytes_get_data(source, NULL));
     g_bytes_unref(source);
     if (vertexShader || fragShader) {
         defGLProgram = glCreateProgram();
@@ -107,14 +107,14 @@ static void gmodel_view_init_shaders(void)
 }
 #endif
 
-static void gmodel_view_init_startup_scene(void)
+static void model_view_init_startup_scene(void)
 {
     if (!currentScene) {
-        currentScene = gsceneNew(NULL);
+        currentScene = sceneNew(NULL);
     }
     if (currentScene) {
         if (!currentScene->meshes) {
-            PGMesh dummyMesh = gresourseLoadSTLA("/wcd/launchpad/model-dummy");
+            PGMesh dummyMesh = stlLoadResource("/wcd/launchpad/model-dummy");
             if (dummyMesh) {
                 currentScene->meshes = g_list_insert(currentScene->meshes, dummyMesh, -1);
             }
@@ -122,7 +122,7 @@ static void gmodel_view_init_startup_scene(void)
     }
 }
 
-void gmodelView_Init(GtkGLArea *ctl)
+void modelView_Init(GtkGLArea *ctl)
 {
     GError *error = NULL;
     gtk_gl_area_make_current(ctl);
@@ -143,13 +143,13 @@ void gmodelView_Init(GtkGLArea *ctl)
     glRotatef(50, 1, 0, 0);
     glRotatef(70, 0, 1, 0);
 
-    gmodel_view_init_startup_scene();
+    model_view_init_startup_scene();
 }
 
-void gmodelView_Free(GtkGLArea *ctl)
+void modelView_Free(GtkGLArea *ctl)
 {
     GError *error = NULL;
-    gsceneFree(currentScene);
+    sceneFree(currentScene);
     currentScene = NULL;
     gtk_gl_area_make_current(ctl);
     if ((error = gtk_gl_area_get_error(ctl)) != NULL) {
@@ -158,7 +158,7 @@ void gmodelView_Free(GtkGLArea *ctl)
     }
 }
 
-void gmodelView_Resize(GtkGLArea *ctl, gint cx, gint cy)
+void modelView_Resize(GtkGLArea *ctl, gint cx, gint cy)
 {
     GLfloat aspect = cy ? (GLfloat)cx / (GLfloat)cy : (GLfloat)cx;
     if (0) {
@@ -179,7 +179,13 @@ void gmodelView_Resize(GtkGLArea *ctl, gint cx, gint cy)
     }
 }
 
-gboolean gmodelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
+gboolean modelView_OnEvent(GtkGLArea *ctl, GdkEvent *event, gpointer user)
+{
+    logBoxTrace(LOGBOX_NOTE, "EVT: [%d]\n", event->type);
+    return (FALSE);
+}
+
+gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Draw grid
@@ -207,5 +213,5 @@ gboolean gmodelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
         }
     }
     glFlush();
-    return FALSE;
+    return (FALSE);
 }
