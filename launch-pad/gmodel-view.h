@@ -5,7 +5,13 @@
 
 struct _GScene
 {
-    GList *meshes;
+    gboolean isPerspectiveView;
+    GVertex           position;
+    GVertex           rotation;
+    gboolean        isRotating;
+    double                  lx;
+    double                  ly;
+    GList              *meshes;
 };
 
 typedef struct _GScene   GScene;
@@ -20,3 +26,5 @@ void modelView_Resize(GtkGLArea *ctl, gint cx, gint cy);
 gboolean modelView_OnEvent(GtkGLArea *ctl, GdkEvent *event, gpointer user);
 gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context);
 
+#define sceneSetPosition(SCENE, NX, NY, NZ) vertexSet(SCENE->position, NX, NY, NZ)
+#define sceneSetRotation(SCENE, NX, NY, NZ) vertexSet(SCENE->rotation, NX, NY, NZ)

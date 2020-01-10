@@ -2,7 +2,9 @@
 
 struct _GVertex
 {
-    float pos[3];
+    double x;
+    double y;
+    double z;
 };
 
 typedef struct _GVertex   GVertex;
@@ -18,6 +20,13 @@ struct _GMesh
 typedef struct _GMesh   GMesh;
 typedef struct _GMesh* PGMesh;
 
-PGMesh gmeshNew(const gchar *name);
-void gmeshFree(PGMesh mesh);
-void gmeshRender(PGMesh mesh);
+PGMesh meshNew(const gchar *name);
+void meshFree(PGMesh mesh);
+void meshRender(PGMesh mesh);
+
+#define vertexSet(vert, NX, NY, NZ) \
+    do {                            \
+        vert.x = (NX);              \
+        vert.y = (NY);              \
+        vert.z = (NZ);              \
+    } while (0)

@@ -5,6 +5,7 @@
   <template class="GMainWin" parent="GtkApplicationWindow">
     <property name="name">MainWnd</property>
     <property name="can_focus">False</property>
+    <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON2_MOTION_MASK | GDK_BUTTON3_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_PROPERTY_CHANGE_MASK | GDK_VISIBILITY_NOTIFY_MASK | GDK_PROXIMITY_IN_MASK | GDK_PROXIMITY_OUT_MASK | GDK_SUBSTRUCTURE_MASK | GDK_SCROLL_MASK | GDK_TOUCH_MASK | GDK_SMOOTH_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK | GDK_TABLET_PAD_MASK</property>
     <property name="title" translatable="yes">Launch Pad</property>
     <property name="window_position">center</property>
     <property name="default_width">1024</property>
@@ -13,7 +14,6 @@
     <property name="icon_name">start-here</property>
     <property name="gravity">static</property>
     <property name="has_resize_grip">True</property>
-    <signal name="configure-event" handler="mainwin_OnConfigureEvent" swapped="no"/>
     <signal name="event" handler="mainwin_OnEvent" swapped="no"/>
     <signal name="map" handler="mainwin_OnMap" swapped="no"/>
     <signal name="unmap" handler="mainwin_OnUnmap" swapped="no"/>
@@ -24,6 +24,7 @@
       <object class="GtkBox" id="rootWndBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON2_MOTION_MASK | GDK_BUTTON3_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_PROPERTY_CHANGE_MASK | GDK_VISIBILITY_NOTIFY_MASK | GDK_PROXIMITY_IN_MASK | GDK_PROXIMITY_OUT_MASK | GDK_SUBSTRUCTURE_MASK | GDK_SCROLL_MASK | GDK_TOUCH_MASK | GDK_SMOOTH_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK | GDK_TABLET_PAD_MASK</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuBar" id="mainMnu">
@@ -40,11 +41,12 @@
           <object class="GtkPaned" id="panRoot">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON2_MOTION_MASK | GDK_BUTTON3_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_PROPERTY_CHANGE_MASK | GDK_VISIBILITY_NOTIFY_MASK | GDK_PROXIMITY_IN_MASK | GDK_PROXIMITY_OUT_MASK | GDK_SUBSTRUCTURE_MASK | GDK_SCROLL_MASK | GDK_TOUCH_MASK | GDK_SMOOTH_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK | GDK_TABLET_PAD_MASK</property>
             <property name="orientation">vertical</property>
-            <property name="position">600</property>
+            <property name="position">300</property>
             <property name="position_set">True</property>
             <property name="wide_handle">True</property>
-            <signal name="notify::position" handler="pan_OnPosSet" object="GMainWin" swapped="no"/>
+            <signal name="notify::position" handler="panRoot_OnPosSet" object="GMainWin" swapped="no"/>
             <child>
               <object class="GtkBox" id="rootViewConfBox">
                 <property name="visible">True</property>
@@ -53,11 +55,11 @@
                   <object class="GtkPaned" id="panView">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="position">600</property>
+                    <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON2_MOTION_MASK | GDK_BUTTON3_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_PROPERTY_CHANGE_MASK | GDK_VISIBILITY_NOTIFY_MASK | GDK_PROXIMITY_IN_MASK | GDK_PROXIMITY_OUT_MASK | GDK_SUBSTRUCTURE_MASK | GDK_SCROLL_MASK | GDK_TOUCH_MASK | GDK_SMOOTH_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK | GDK_TABLET_PAD_MASK</property>
+                    <property name="position">300</property>
                     <property name="position_set">True</property>
                     <property name="wide_handle">True</property>
-                    <signal name="event" handler="mainwin_OnEvent" object="rootViewConfBox" swapped="yes"/>
-                    <signal name="notify::position" handler="pan_OnPosSet" object="GMainWin" swapped="no"/>
+                    <signal name="notify::position" handler="panView_OnPosSet" object="GMainWin" swapped="no"/>
                     <child>
                       <object class="GtkBox" id="rootViewBox">
                         <property name="visible">True</property>
@@ -121,30 +123,42 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkGLArea" id="modelView">
+                          <object class="GtkBox" id="mvRootBox">
                             <property name="visible">True</property>
-                            <property name="app_paintable">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="has_focus">True</property>
-                            <property name="is_focus">True</property>
-                            <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON2_MOTION_MASK | GDK_BUTTON3_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_PROPERTY_CHANGE_MASK | GDK_VISIBILITY_NOTIFY_MASK | GDK_PROXIMITY_IN_MASK | GDK_PROXIMITY_OUT_MASK | GDK_SUBSTRUCTURE_MASK | GDK_SCROLL_MASK | GDK_TOUCH_MASK | GDK_SMOOTH_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK | GDK_TABLET_PAD_MASK</property>
-                            <property name="has_alpha">True</property>
-                            <property name="has_depth_buffer">True</property>
-                            <property name="has_stencil_buffer">True</property>
-                            <property name="use_es">True</property>
-                            <signal name="button-press-event" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="button-release-event" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="drag-begin" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="enter-notify-event" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="event" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="key-press-event" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="motion-notify-event" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="realize" handler="modelView_Init" swapped="no"/>
-                            <signal name="render" handler="modelView_OnRender" swapped="no"/>
-                            <signal name="resize" handler="modelView_Resize" swapped="no"/>
-                            <signal name="touch-event" handler="modelView_OnEvent" swapped="no"/>
-                            <signal name="unrealize" handler="modelView_Free" swapped="no"/>
-                            <signal name="window-state-event" handler="modelView_OnEvent" swapped="no"/>
+                            <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkGLArea" id="modelView">
+                                <property name="visible">True</property>
+                                <property name="app_paintable">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="has_focus">True</property>
+                                <property name="is_focus">True</property>
+                                <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON2_MOTION_MASK | GDK_BUTTON3_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_PROPERTY_CHANGE_MASK | GDK_VISIBILITY_NOTIFY_MASK | GDK_PROXIMITY_IN_MASK | GDK_PROXIMITY_OUT_MASK | GDK_SUBSTRUCTURE_MASK | GDK_SCROLL_MASK | GDK_TOUCH_MASK | GDK_SMOOTH_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK | GDK_TABLET_PAD_MASK</property>
+                                <property name="has_alpha">True</property>
+                                <property name="has_depth_buffer">True</property>
+                                <property name="has_stencil_buffer">True</property>
+                                <property name="use_es">True</property>
+                                <signal name="button-press-event" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="button-release-event" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="drag-begin" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="enter-notify-event" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="event" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="key-press-event" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="motion-notify-event" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="realize" handler="modelView_Init" swapped="no"/>
+                                <signal name="render" handler="modelView_OnRender" swapped="no"/>
+                                <signal name="resize" handler="modelView_Resize" swapped="no"/>
+                                <signal name="touch-event" handler="modelView_OnEvent" swapped="no"/>
+                                <signal name="unrealize" handler="modelView_Free" swapped="no"/>
+                                <signal name="window-state-event" handler="modelView_OnEvent" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -159,15 +173,36 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="confBox">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkToolbar">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkRevealer">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="transition_type">none</property>
+                            <property name="reveal_child">True</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>

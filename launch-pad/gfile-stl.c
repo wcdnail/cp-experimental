@@ -135,7 +135,7 @@ PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
         g_object_unref(idata);
         return stlLoadBin(pathname, istm);
     }
-    result = gmeshNew(pathname);
+    result = meshNew(pathname);
     if (!result) {
         errorTitle = "mesh allocating";
         goto onError;
@@ -199,7 +199,7 @@ onError:
         errorTitle,
         error ? error->code : errno, 
         error ? error->message : strerror(errno));
-    gmeshFree(result);
+    meshFree(result);
     result = NULL;
     if (idata) {
         g_object_unref(idata);

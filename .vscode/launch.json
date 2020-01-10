@@ -12,7 +12,7 @@
             "environment": [ 
                 { 
                     "name": "GSETTINGS_SCHEMA_DIR",
-                    "value": "${workspaceFolder}/launch-pad"
+                    "value": "${workspaceFolder}/build/launch-pad/wcd.launch.pad.schema"
                 }
             ],
             "externalConsole": false,

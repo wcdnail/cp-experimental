@@ -9,103 +9,41 @@ static PGScene currentScene = NULL;
 PGScene sceneNew(GList *meshes)
 {
     const gchar *errorTitle = NULL;
-    PGScene        resScene = NULL; 
-    resScene = g_malloc(sizeof(GMesh));
-    if (!resScene) {
+    PGScene           scene = NULL; 
+    scene = g_malloc(sizeof(GScene));
+    if (!scene) {
         errorTitle = "scene allocation";
         goto onError;
     }
-    resScene->meshes = meshes ? g_list_copy(meshes) : NULL;
-    if (meshes && !resScene->meshes) {
+    scene->meshes = meshes ? g_list_copy(meshes) : NULL;
+    if (meshes && !scene->meshes) {
         errorTitle = "mesh list copy";
         goto onError;
     }
+    scene->isPerspectiveView = TRUE;
+    sceneSetPosition(scene, 0, 0, 0);
+    sceneSetRotation(scene, 0, 0, 0);
+    scene->isRotating = FALSE;
+    scene->lx = 0;
+    scene->ly = 0;
     goto noError;
 onError:
     logBoxTrace(LOGBOX_ERROR, "MODELVEW %s ERROR: [%d] %s\n", errorTitle, errno, strerror(errno));
-    sceneFree(resScene);
-    resScene = NULL;
+    sceneFree(scene);
+    scene = NULL;
 noError:
-    return resScene;
+    return scene;
 }
 
 void sceneFree(PGScene scene)
 {
     if (scene) {
-        g_list_foreach(scene->meshes, gmeshFree, NULL);
+        g_list_foreach(scene->meshes, meshFree, NULL);
         g_list_free(scene->meshes);
         scene->meshes = NULL;
         g_free(scene);
     }
 }
-
-#if 0
-static guint model_view_create_shader(int shader_type, const char *source)
-{
-    int   status = 0;
-    guint shader = glCreateShader(shader_type);
-    glShaderSource(shader, 1, &source, NULL);
-    glCompileShader(shader);
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE) {
-        char *buffer = NULL;
-        int  log_len = 0;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_len);
-        buffer = g_malloc(log_len + 1);
-        glGetShaderInfoLog(shader, log_len, NULL, buffer);
-        logBoxTrace(LOGBOX_ERROR, "MODELVIEW load shader ERROR: [%d] %s\n", status, buffer);
-        g_free(buffer);
-        glDeleteShader(shader);
-        shader = 0;
-    }
-    return shader;
-}
-
-static void model_view_init_shaders(void)
-{
-    GBytes     *source = NULL;
-    int         status = 0;
-    guint vertexShader = 0;
-    guint   fragShader = 0;
-    source = g_resources_lookup_data("/wcd/launchpad/def-shader-vertex", 0, NULL);
-    vertexShader = model_view_create_shader(GL_VERTEX_SHADER, g_bytes_get_data(source, NULL));
-    g_bytes_unref(source);
-    source = g_resources_lookup_data("/wcd/launchpad/def-shader-fragment", 0, NULL);
-    fragShader = model_view_create_shader(GL_FRAGMENT_SHADER, g_bytes_get_data(source, NULL));
-    g_bytes_unref(source);
-    if (vertexShader || fragShader) {
-        defGLProgram = glCreateProgram();
-        glAttachShader(defGLProgram, vertexShader);
-        glAttachShader(defGLProgram, fragShader);
-        glLinkProgram(defGLProgram);
-        glGetProgramiv(defGLProgram, GL_LINK_STATUS, &status);
-        if (status == GL_FALSE) {
-            char *buffer = NULL;
-            int  log_len = 0;
-            glGetProgramiv(defGLProgram, GL_INFO_LOG_LENGTH, &log_len);
-            buffer = g_malloc(log_len + 1);
-            glGetProgramInfoLog(defGLProgram, log_len, NULL, buffer);
-            logBoxTrace(LOGBOX_ERROR, "MODELVIEW link GL program ERROR: [%d] %s\n", status, buffer);
-            g_free (buffer);
-            glDeleteProgram (defGLProgram);
-            defGLProgram = 0;
-        }
-        else {
-            defMvpLocation = glGetUniformLocation(defGLProgram, "mvp");
-            defPositionLocation = glGetAttribLocation (defGLProgram, "position");
-            defColorLocation = glGetAttribLocation (defGLProgram, "color");
-            glDetachShader(defGLProgram, vertexShader);
-            glDetachShader(defGLProgram, fragShader);
-        }
-    }
-    if (vertexShader) {
-        glDeleteShader(vertexShader);
-    }
-    if (fragShader) {
-        glDeleteShader(fragShader);
-    }
-}
-#endif
 
 static void model_view_init_startup_scene(void)
 {
@@ -113,6 +51,8 @@ static void model_view_init_startup_scene(void)
         currentScene = sceneNew(NULL);
     }
     if (currentScene) {
+        sceneSetPosition(currentScene, 0, 0, -5);
+        sceneSetRotation(currentScene, 45, 45, 0);
         if (!currentScene->meshes) {
             PGMesh dummyMesh = stlLoadResource("/wcd/launchpad/model-dummy");
             if (dummyMesh) {
@@ -133,16 +73,9 @@ void modelView_Init(GtkGLArea *ctl)
     logBoxTrace(LOGBOX_MSG, "Using OpenGL : %s\n", glGetString(GL_VERSION));
     logBoxTrace(LOGBOX_MSG, "GL vendor    : %s\n", glGetString(GL_VENDOR));
     logBoxTrace(LOGBOX_MSG, "GL renderer  : %s\n", glGetString(GL_RENDERER));
-
     glClearColor(1, 1, 1, 1);
+    glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(0, 0, -3);
-    glRotatef(50, 1, 0, 0);
-    glRotatef(70, 0, 1, 0);
-
     model_view_init_startup_scene();
 }
 
@@ -160,56 +93,106 @@ void modelView_Free(GtkGLArea *ctl)
 
 void modelView_Resize(GtkGLArea *ctl, gint cx, gint cy)
 {
-    GLfloat aspect = cy ? (GLfloat)cx / (GLfloat)cy : (GLfloat)cx;
-    if (0) {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glFrustum(-2.5, 2.5, -2.5/aspect, 2.5/aspect, 1, 10.0);
+    gdouble aspect = cy ? (gdouble)cx / (gdouble)cy : 1;
+    glViewport(0, 0, cx, cy);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if (currentScene && currentScene->isPerspectiveView) {
+        glFrustum(-1, 1, -1/aspect, 1/aspect, 1, 300);
     }
     else {
-        glViewport(0, 0, cx, cy);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
         if (cx <= cy) {
-            glOrtho(-2.5, 2.5, -2.5/aspect, 2.5/aspect, -10.0, 10.0);
+            glOrtho(-1, 1, -1/aspect, 1/aspect, 1, 300);
         } 
         else {
-            glOrtho(-2.5*aspect, 2.5*aspect, -2.5, 2.5, -10.0, 10.0);
+            glOrtho(-1*aspect, 1*aspect, -1, 1, 1, 300);
         }
     }
 }
 
 gboolean modelView_OnEvent(GtkGLArea *ctl, GdkEvent *event, gpointer user)
 {
-    logBoxTrace(LOGBOX_NOTE, "MVEVENT: [%d]\n", event->type);
+    gdouble gx, gy, dx, dy;
+    switch (event->type) {
+    case GDK_SCROLL:
+        if (currentScene) {
+            gdk_event_get_coords(event, &gx, &gy);
+            gdk_event_get_scroll_deltas(event, &dx, &dy);
+            currentScene->position.z -= dy * 0.5;
+            gtk_widget_queue_draw(GTK_WIDGET(ctl));
+        }
+        break;
+    case GDK_BUTTON_RELEASE:
+        if (currentScene) {
+            currentScene->isRotating = FALSE;
+        }
+        break;
+    case GDK_BUTTON_PRESS:
+    case GDK_2BUTTON_PRESS:
+    case GDK_3BUTTON_PRESS:
+        if (currentScene) {
+            gint btn;
+            gdk_event_get_button(event, &btn);
+            gdk_event_get_coords(event, &gx, &gy);
+            currentScene->isRotating = btn == 3;
+            currentScene->lx = gx;
+            currentScene->ly = gy;
+        }
+        break;
+    case GDK_MOTION_NOTIFY: 
+        if (currentScene) {
+            gdk_event_get_coords(event, &gx, &gy);
+            if(currentScene->isRotating) {
+                dx = gx - currentScene->lx;
+                dy = currentScene->ly - gy;
+                currentScene->lx = gx;
+                currentScene->ly = gy;
+                currentScene->rotation.x -= dy * 0.3;
+                currentScene->rotation.y += dx * 0.3;
+                gtk_widget_queue_draw(GTK_WIDGET(ctl));
+            }
+        }
+        break;
+    }
     return (FALSE);
 }
 
 gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
 {
+    PGVertex position;
+    PGVertex rotation;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // Draw grid
-    glColor4f(0, 0, 0, 1);
-    glBegin(GL_LINES);
-    for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
-        glVertex3f(i, 0, 2.5); glVertex3f(i, 0, -2.5);
-        glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
-    }
-    glEnd();
-#if 0
-    // Test stuff
-    glBegin(GL_TRIANGLE_STRIP);
-    glColor4f(1, 0, 1, 1); glVertex3f(0, 2, 0);
-    glColor4f(1, 0, 0, 1); glVertex3f(-1, 0, 1);
-    glColor4f(0, 1, 0, 1); glVertex3f(1, 0, 1);
-    glColor4f(0, 0, 1, 1); glVertex3f(0, 0, -1.4);
-    glColor4f(1, 1, 0, 1); glVertex3f(0, 2, 0);
-    glColor4f(1, 0, 0, 1); glVertex3f(-1, 0, 1);
-    glEnd();
-#endif    
     if (currentScene) {
+        position = &currentScene->position;
+        rotation = &currentScene->rotation;
+        // Position & rotation
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glTranslated(position->x, position->y, position->z);
+        glRotated(rotation->x, 1, 0, 0);
+        glRotated(rotation->y, 0, 1, 0);
+        glRotated(rotation->z, 0, 1, 0);
+        // Draw grid
+        glColor4f(0, 0, 0, 1);
+        glBegin(GL_LINES);
+        for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
+            glVertex3f(i, 0, 2.5); glVertex3f(i, 0, -2.5);
+            glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
+        }
+        glEnd();
+#if 1
+        // Test stuff
+        glBegin(GL_TRIANGLE_STRIP);
+        glColor4f(1, 0, 1, 1); glVertex3f(0, 2, 0);
+        glColor4f(1, 0, 0, 1); glVertex3f(-2, 0, 2);
+        glColor4f(0, 1, 0, 1); glVertex3f(2, 0, 2);
+        glColor4f(0, 0, 1, 1); glVertex3f(0, 0, -2);
+        glColor4f(1, 1, 0, 1); glVertex3f(0, 2, 0);
+        glColor4f(1, 0, 1, 1); glVertex3f(-2, 0, 2);
+        glEnd();
+#endif    
         if (currentScene->meshes) {
-            g_list_foreach(currentScene->meshes, gmeshRender, NULL);
+            g_list_foreach(currentScene->meshes, meshRender, NULL);
         }
     }
     glFlush();

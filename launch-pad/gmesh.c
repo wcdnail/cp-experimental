@@ -3,7 +3,7 @@
 #include "gmesh.h"
 #include "glog-box.h"
 
-PGMesh gmeshNew(const gchar *name)
+PGMesh meshNew(const gchar *name)
 {
     const gchar *errorTitle = NULL;
     PGMesh         tempMesh = NULL;
@@ -30,13 +30,13 @@ PGMesh gmeshNew(const gchar *name)
     goto noError;
 onError:
     logBoxTrace(LOGBOX_ERROR, "GMESH %s ERROR: [%d] %s\n", errorTitle, errno, strerror(errno));
-    gmeshFree(tempMesh);
+    meshFree(tempMesh);
     tempMesh = NULL;
 noError:
     return tempMesh;
 }
 
-void gmeshFree(PGMesh mesh)
+void meshFree(PGMesh mesh)
 {
     if (mesh) {
         if (mesh->index) {
@@ -55,13 +55,13 @@ void gmeshFree(PGMesh mesh)
     }
 }
 
-void gmeshRender(PGMesh mesh)
+void meshRender(PGMesh mesh)
 {
     if(!mesh || !mesh->vertex || !mesh->index) {
         return ;
     }
     glPushMatrix();
-    //glColor3f(0.5, 0.5, 1.0);
+    glColor3f(0.5, 0.5, 1.0);
 
     glPopMatrix();    
 }

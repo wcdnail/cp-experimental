@@ -13,8 +13,8 @@ G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW);
 static void mainwin_OnDispose(GObject *gobject);
 static void mainwin_OnMap(GMainWin *win, gpointer user);
 static void mainwin_OnUnmap(GMainWin *win, gpointer user);
-static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user);
-static gboolean mainwin_OnConfigureEvent(GMainWin *win, GdkEvent *event, gpointer user);
+static void panRoot_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user);
+static void panView_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user);
 static gboolean mainwin_OnEvent(GMainWin *win, GdkEvent *event, gpointer user);
 
 static void gmain_win_class_init(GMainWinClass *cls)
@@ -30,9 +30,9 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdRunSingleCommand);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnMap);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnUnmap);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnConfigureEvent);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnEvent);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), pan_OnPosSet);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), panRoot_OnPosSet);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), panView_OnPosSet);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnToggleScrollDown);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnClear);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_Init);
@@ -42,7 +42,7 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_OnEvent);
 }
 
-static void enum_gsettings_schemas(void) 
+static void mainwinSettingsInit(GMainWin *win) 
 {
 #ifdef _DEBUG_EXTRA    
     GList                   *schema_list = NULL;
@@ -76,19 +76,40 @@ static gboolean test_log_box(gpointer data)
 }
 #endif
 
+static void mainwinModelViewInit(GMainWin *win) 
+{
+    gtk_widget_set_events(GTK_WIDGET(win->modelView), 0
+        | GDK_POINTER_MOTION_MASK
+        | GDK_POINTER_MOTION_HINT_MASK
+        | GDK_BUTTON_MOTION_MASK
+        | GDK_BUTTON1_MOTION_MASK
+        | GDK_BUTTON2_MOTION_MASK
+        | GDK_BUTTON3_MOTION_MASK
+        | GDK_BUTTON_PRESS_MASK
+        | GDK_BUTTON_RELEASE_MASK
+        | GDK_KEY_PRESS_MASK
+        | GDK_KEY_RELEASE_MASK
+        | GDK_SCROLL_MASK
+        | GDK_TOUCH_MASK
+        | GDK_SMOOTH_SCROLL_MASK
+        | GDK_TOUCHPAD_GESTURE_MASK
+    );
+}
+
 static void gmain_win_init(GMainWin *win)
 {
     GdkPixbuf *mainIcon = NULL;
     GError       *error = NULL;
     gtk_widget_init_template(GTK_WIDGET(win));
     logBoxInit(win->logBox);
+    mainwinModelViewInit(win);
     // Command line
     gtk_widget_set_sensitive(GTK_WIDGET(win->cmdSingleCommandEditBox), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(win->cmdRunSingleCommand), FALSE);
     // My settings
     appSettingsOnWindowInit(win);
-    // GTK Settings
-    enum_gsettings_schemas();
+    // gLib Settings
+    mainwinSettingsInit(win);
     // Appearance
     mainIcon = gdk_pixbuf_new_from_resource("/wcd/launchpad/icon-main", &error);
     if (mainIcon) {
@@ -131,20 +152,22 @@ static void mainwin_OnUnmap(GMainWin *win, gpointer user)
     appSettingsOnWindowClose(win);
 }
 
-static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user) 
+static void panRoot_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user)
 {
-    GtkPaned *panctl = GTK_PANED(gobject);
-    GMainWin    *win = GMAIN_WIN(user);
-    gint      panpos = gtk_paned_get_position(panctl);
-    gint        side = 0;
-    if (win->panRoot == panctl) {
-        gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, NULL, &side);
-        appSettings()->logPanelCy = side - panpos;
-    }
-    else {
-        gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, &side, NULL);
-        appSettings()->confPanelCx = side - panpos;
-    }
+    GMainWin *win = GMAIN_WIN(user);
+    gint   panpos = gtk_paned_get_position(ctl);
+    gint     side = 0;
+    gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, NULL, &side);
+    appSettings()->logPanelCy = side - panpos;
+}
+
+static void panView_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user)
+{
+    GMainWin *win = GMAIN_WIN(user);
+    gint   panpos = gtk_paned_get_position(ctl);
+    gint     side = 0;
+    gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, &side, NULL);
+    appSettings()->confPanelCx = side - panpos;
 }
 
 static void mainwin_adjustPanelSize(GMainWin *win, gint cx, gint cy)
@@ -154,14 +177,12 @@ static void mainwin_adjustPanelSize(GMainWin *win, gint cx, gint cy)
     gtk_paned_set_position(win->panView, cx - settings->confPanelCx);
 }
 
-static gboolean mainwin_OnConfigureEvent(GMainWin *win, GdkEvent *event, gpointer user)
-{
-    mainwin_adjustPanelSize(win, event->configure.width, event->configure.height);
-    return (FALSE);
-}
-
 static gboolean mainwin_OnEvent(GMainWin *win, GdkEvent *event, gpointer user)
 {
-    logBoxTrace(LOGBOX_NOTE, "EVENT: [%d]\n", event->type);
-    return (FALSE);   
+    switch (event->type) {
+    case GDK_CONFIGURE:
+        mainwin_adjustPanelSize(win, event->configure.width, event->configure.height);
+        break;
+    }
+    return (FALSE);
 }
