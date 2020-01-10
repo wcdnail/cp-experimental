@@ -10,12 +10,10 @@
 
 G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW);
 
+static void mainwin_OnRealize(GMainWin *win, gpointer user);
 static void mainwin_OnDispose(GObject *gobject);
-static void mainwin_OnMap(GMainWin *win, gpointer user);
 static void mainwin_OnUnmap(GMainWin *win, gpointer user);
-static void panRoot_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user);
-static void panView_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user);
-static gboolean mainwin_OnEvent(GMainWin *win, GdkEvent *event, gpointer user);
+static void pan_OnPositionNotify(GtkPaned *ctl, GParamSpec *pspec, gpointer user);
 
 static void gmain_win_class_init(GMainWinClass *cls)
 {
@@ -28,11 +26,8 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdToggleLogScrollDown);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdSingleCommandEditBox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdRunSingleCommand);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnMap);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnRealize);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnUnmap);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnEvent);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), panRoot_OnPosSet);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), panView_OnPosSet);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnToggleScrollDown);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnClear);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_Init);
@@ -40,6 +35,7 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_Resize);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_OnRender);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), modelView_OnEvent);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), pan_OnPositionNotify);
 }
 
 static void mainwinSettingsInit(GMainWin *win) 
@@ -101,16 +97,6 @@ static void gmain_win_init(GMainWin *win)
     GdkPixbuf *mainIcon = NULL;
     GError       *error = NULL;
     gtk_widget_init_template(GTK_WIDGET(win));
-    logBoxInit(win->logBox);
-    mainwinModelViewInit(win);
-    // Command line
-    gtk_widget_set_sensitive(GTK_WIDGET(win->cmdSingleCommandEditBox), FALSE);
-    gtk_widget_set_sensitive(GTK_WIDGET(win->cmdRunSingleCommand), FALSE);
-    // My settings
-    appSettingsOnWindowInit(win);
-    // gLib Settings
-    mainwinSettingsInit(win);
-    // Appearance
     mainIcon = gdk_pixbuf_new_from_resource("/wcd/launchpad/icon-main", &error);
     if (mainIcon) {
         gtk_window_set_icon(GTK_WINDOW(win), mainIcon);
@@ -121,9 +107,6 @@ static void gmain_win_init(GMainWin *win)
     if (mainIcon) {
         g_object_unref(mainIcon);
     }
-#ifdef _DEBUG_LOGBOX
-    g_timeout_add_seconds(1, test_log_box, NULL);
-#endif
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -137,14 +120,27 @@ void mainWinOpen(GMainWin *win, GFile *file)
 {
 }
 
+static void mainwin_OnRealize(GMainWin *win, gpointer user)
+{
+    logBoxInit(win->logBox);
+    mainwinModelViewInit(win);
+    // Command line
+    gtk_widget_set_sensitive(GTK_WIDGET(win->cmdSingleCommandEditBox), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(win->cmdRunSingleCommand), FALSE);
+    // My settings
+    appSettingsOnWindowInit(win);
+    // gLib Settings
+    mainwinSettingsInit(win);
+    // Appearance
+#ifdef _DEBUG_LOGBOX
+    g_timeout_add_seconds(1, test_log_box, NULL);
+#endif
+}
+
 static void mainwin_OnDispose(GObject *gobject)
 {
     GMainWin *win = GMAIN_WIN(gobject);
     G_OBJECT_CLASS(gmain_win_parent_class)->dispose(gobject);
-}
-
-static void mainwin_OnMap(GMainWin *win, gpointer user)
-{
 }
 
 static void mainwin_OnUnmap(GMainWin *win, gpointer user)
@@ -152,37 +148,18 @@ static void mainwin_OnUnmap(GMainWin *win, gpointer user)
     appSettingsOnWindowClose(win);
 }
 
-static void panRoot_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user)
+static void pan_OnPositionNotify(GtkPaned *ctl, GParamSpec *pspec, gpointer user)
 {
-    GMainWin *win = GMAIN_WIN(user);
-    gint   panpos = gtk_paned_get_position(ctl);
-    gint     side = 0;
-    gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, NULL, &side);
-    appSettings()->logPanelCy = side - panpos;
-}
-
-static void panView_OnPosSet(GtkPaned *ctl, GParamSpec *pspec, gpointer user)
-{
-    GMainWin *win = GMAIN_WIN(user);
-    gint   panpos = gtk_paned_get_position(ctl);
-    gint     side = 0;
-    gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, &side, NULL);
-    appSettings()->confPanelCx = side - panpos;
-}
-
-static void mainwin_adjustPanelSize(GMainWin *win, gint cx, gint cy)
-{
-    PAppSettings settings = appSettings();
-    gtk_paned_set_position(win->panRoot, cy - settings->logPanelCy);
-    gtk_paned_set_position(win->panView, cx - settings->confPanelCx);
-}
-
-static gboolean mainwin_OnEvent(GMainWin *win, GdkEvent *event, gpointer user)
-{
-    switch (event->type) {
-    case GDK_CONFIGURE:
-        mainwin_adjustPanelSize(win, event->configure.width, event->configure.height);
-        break;
+    GMainWin    *win = GMAIN_WIN(user);
+    gint      panpos = gtk_paned_get_position(ctl);
+    gboolean rootPan = ctl == win->panRoot;
+    gint          cx = 0;
+    gint          cy = 0;
+    gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, &cx, &cy);
+    if (rootPan) {
+        gtk_paned_set_position(win->panRoot, cy - appSettings()->logPanelCy);
     }
-    return (FALSE);
+    else {
+        gtk_paned_set_position(win->panView, cx - appSettings()->confPanelCx);
+    }
 }

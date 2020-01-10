@@ -18,7 +18,7 @@ static GString *currentSettingsPathname = NULL;
 #define _DEF_WND_WIDTH      1024
 #define _DEF_WND_HEIGHT     768
 #define _DEF_PAN_ROOT_CY    300
-#define _DEF_PAN_VIEW_CX    220
+#define _DEF_PAN_VIEW_CX    240
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -240,6 +240,10 @@ void appSettingsOnWindowInit(GMainWin *win)
     gtk_window_move(GTK_WINDOW(win), settings->appRect->x, settings->appRect->y);
     if (settings->appIsMaximized) {
         gtk_window_maximize(GTK_WINDOW(win));
+    }
+    else {
+        gtk_paned_set_position(win->panRoot, settings->appRect->cy - settings->logPanelCy);
+        gtk_paned_set_position(win->panView, settings->appRect->cx - settings->confPanelCx);
     }
     gtk_toggle_tool_button_set_active(win->cmdToggleLogScrollDown, TRUE);
 }
