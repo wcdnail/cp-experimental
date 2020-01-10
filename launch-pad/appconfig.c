@@ -202,7 +202,7 @@ void appSettingsSave(void)
         errorTitle = "json serialization failed";
         goto onError;
     }
-#ifdef _DEBUG
+#ifdef _DEBUG_XTRA
     g_print("  SETTINGS [%s]:\n%s\n", currentSettingsPathname->str, settingsJson);
 #endif
     if (!app_settings_init_current_pathname()) {

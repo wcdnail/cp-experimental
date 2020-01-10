@@ -10,7 +10,7 @@ mingw-w64-x86_64-ninja \
 mingw-w64-x86_64-pkg-config \
 mingw-w64-x86_64-glib2 \
 mingw-w64-x86_64-gtk3 \
-mingw-w64-x86_64-glade \
+mingw-w64-x86_64-glade
 
 ```
  - optional packages
@@ -18,7 +18,9 @@ mingw-w64-x86_64-glade \
 pacman -S mingw-w64-x86_64-crt-git \
 mingw-w64-x86_64-headers-git \
 mingw-w64-x86_64-python3-gobject \
-mingw-w64-x86_64-vala \
+mingw-w64-x86_64-python-pyopengl \
+mingw-w64-x86_64-python-numpy \
+mingw-w64-x86_64-vala
 
 ```
 ## Special thanks

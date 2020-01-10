@@ -181,7 +181,7 @@ void modelView_Resize(GtkGLArea *ctl, gint cx, gint cy)
 
 gboolean modelView_OnEvent(GtkGLArea *ctl, GdkEvent *event, gpointer user)
 {
-    logBoxTrace(LOGBOX_NOTE, "EVT: [%d]\n", event->type);
+    logBoxTrace(LOGBOX_NOTE, "MVEVENT: [%d]\n", event->type);
     return (FALSE);
 }
 
@@ -196,7 +196,7 @@ gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
         glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
     }
     glEnd();
-#if 0    
+#if 1
     // Test stuff
     glBegin(GL_TRIANGLE_STRIP);
     glColor4f(1, 0, 1, 1); glVertex3f(0, 2, 0);

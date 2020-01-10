@@ -14,7 +14,8 @@ static void mainwin_OnDispose(GObject *gobject);
 static void mainwin_OnMap(GMainWin *win, gpointer user);
 static void mainwin_OnUnmap(GMainWin *win, gpointer user);
 static void pan_OnPosSet(GObject *gobject, GParamSpec *pspec, gpointer user);
-static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpointer user);
+static gboolean mainwin_OnConfigureEvent(GMainWin *win, GdkEvent *event, gpointer user);
+static gboolean mainwin_OnEvent(GMainWin *win, GdkEvent *event, gpointer user);
 
 static void gmain_win_class_init(GMainWinClass *cls)
 {
@@ -29,7 +30,8 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdRunSingleCommand);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnMap);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnUnmap);
-    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_onConfigureEvent);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnConfigureEvent);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnEvent);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), pan_OnPosSet);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnToggleScrollDown);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), logBox_OnClear);
@@ -152,8 +154,14 @@ static void mainwin_adjustPanelSize(GMainWin *win, gint cx, gint cy)
     gtk_paned_set_position(win->panView, cx - settings->confPanelCx);
 }
 
-static gboolean mainwin_onConfigureEvent(GtkWidget *widget, GdkEvent *event, gpointer user)
+static gboolean mainwin_OnConfigureEvent(GMainWin *win, GdkEvent *event, gpointer user)
 {
-    mainwin_adjustPanelSize(GMAIN_WIN(widget), event->configure.width, event->configure.height);
+    mainwin_adjustPanelSize(win, event->configure.width, event->configure.height);
     return (FALSE);
+}
+
+static gboolean mainwin_OnEvent(GMainWin *win, GdkEvent *event, gpointer user)
+{
+    logBoxTrace(LOGBOX_NOTE, "EVENT: [%p][%d]\n", user, event->type);
+    return (FALSE);   
 }
