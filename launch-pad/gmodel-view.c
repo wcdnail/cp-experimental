@@ -196,7 +196,7 @@ gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
         glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
     }
     glEnd();
-#if 1
+#if 0
     // Test stuff
     glBegin(GL_TRIANGLE_STRIP);
     glColor4f(1, 0, 1, 1); glVertex3f(0, 2, 0);

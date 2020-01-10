@@ -2,22 +2,22 @@ cmake_minimum_required(VERSION 3.0)
 
 project(launch-pad)
 
-option(USE_GSCHEMA "Compile & install GSettings schema" OFF)
+option(USE_GSCHEMA "Compile & install GSettings schema" ON)
 
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-list(APPEND ALL_C_DEFS ${GTK3_CFLAGS_OTHER})
+list(APPEND ALL_C_DEFS   ${GTK3_CFLAGS_OTHER})
 list(APPEND ALL_INC_DIRS ${GTK3_INCLUDE_DIRS})
 list(APPEND ALL_LIB_DIRS ${GTK3_LIBRARY_DIRS})
 
 pkg_check_modules(JSONGLIB REQUIRED json-glib-1.0)
-list(APPEND ALL_C_DEFS ${JSONGLIB_CFLAGS_OTHER})
+list(APPEND ALL_C_DEFS   ${JSONGLIB_CFLAGS_OTHER})
 list(APPEND ALL_INC_DIRS ${JSONGLIB_INCLUDE_DIRS})
 list(APPEND ALL_LIB_DIRS ${JSONGLIB_LIBRARY_DIRS})
 
 pkg_check_modules(EPOXY REQUIRED epoxy)
-list(APPEND ALL_C_DEFS ${EPOXY_CFLAGS_OTHER})
+list(APPEND ALL_C_DEFS   ${EPOXY_CFLAGS_OTHER})
 list(APPEND ALL_INC_DIRS ${EPOXY_INCLUDE_DIRS})
 list(APPEND ALL_LIB_DIRS ${EPOXY_LIBRARY_DIRS})
 
@@ -54,12 +54,13 @@ add_custom_command(
 
 if (USE_GSCHEMA)
     set(SCHEMA_CT "gschemas.compiled")
-    set(SCHEMA_PN "${CMAKE_CURRENT_SOURCE_DIR}/${SCHEMA_CT}")
+    set(SCHEMA_BD "${CMAKE_CURRENT_BINARY_DIR}/wcd.launch.pad.schema")
+    set(SCHEMA_PN "${SCHEMA_BD}/${SCHEMA_CT}")
     add_custom_command(
         OUTPUT "${SCHEMA_PN}"
         COMMAND glib-compile-schemas
         ARGS --strict
-             --targetdir=${CMAKE_CURRENT_SOURCE_DIR}/
+             --targetdir=${SCHEMA_BD}/
              ${CMAKE_CURRENT_SOURCE_DIR}/.
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/wcd.launch.pad.gschema.xml
     )
@@ -84,17 +85,20 @@ else()
     set(OS_SPEC_SRCS )
 endif()
 
-add_executable(${PROJECT_NAME} 
-    ${C_SRCS} 
-    ${CXX_SRCS} 
+add_executable(${PROJECT_NAME}
+    ${C_SRCS}
+    ${CXX_SRCS}
     ${OS_SPEC_SRCS}
 )
 
-target_link_libraries(${PROJECT_NAME} 
-    ${GTK3_LIBRARIES} 
+list(APPEND ALL_LIBS
+    ${GTK3_LIBRARIES}
     ${JSONGLIB_LIBRARIES}
     ${EPOXY_LIBRARIES}
 )
+list(REMOVE_DUPLICATES ALL_LIBS)
+
+target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 
 message( "# -----------------------------------------------------------------" )
 message( "Project            : [${CMAKE_BUILD_TYPE}] ${PROJECT_NAME}" )
@@ -108,7 +112,9 @@ message( "ResCompiler        : ${CMAKE_RC_COMPILER}" )
 message( "ResCompiler flags  : ${CMAKE_RC_FLAGS}" )
 message( "Linker flags       : ${CMAKE_LINK_FLAGS}" )
 message( "# -----------------------------------------------------------------" )
+message( "USE_GSCHEMA        : ${USE_GSCHEMA}" )
 message( "C DEFS             : ${ALL_C_DEFS}" )
 message( "INCLUDES           : ${ALL_INC_DIRS}" )
-message( "LIBS               : ${ALL_LIB_DIRS}" )
+message( "LIB DIRS           : ${ALL_LIB_DIRS}" )
+message( "LIBS               : ${ALL_LIBS}" )
 message( "# -----------------------------------------------------------------" )
