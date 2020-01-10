@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0)
 
 project(launch-pad)
 
+option(USE_GSCHEMA "Compile & install GSettings schema" OFF)
+
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
@@ -29,8 +31,7 @@ list(REMOVE_DUPLICATES ALL_LIB_DIRS)
 link_directories(${ALL_LIB_DIRS})
 
 set(RESOURCES_CT "${PROJECT_NAME}-resources")
-set(RESOURCES_PN "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.c")
-set(RESOURCES_H  "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCES_CT}.h")
+set(RESOURCES_PN "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCES_CT}.c")
 set(RESOURCES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ui 
@@ -41,7 +42,6 @@ set(RESOURCES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/glp-fragment.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glp-vertex.glsl
 )
-
 add_custom_command(
     OUTPUT "${RESOURCES_PN}"
     COMMAND glib-compile-resources
@@ -52,34 +52,23 @@ add_custom_command(
     DEPENDS ${RESOURCES_LIST}
 )
 
-add_custom_command(
-    OUTPUT "${RESOURCES_H}"
-    COMMAND glib-compile-resources
-    ARGS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
-         --target=${RESOURCES_H} 
-         --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} 
-         --generate-header
-    DEPENDS ${RESOURCES_LIST}
-)
-
-add_custom_target(${RESOURCES_CT} ALL DEPENDS ${RESOURCES_PN} ${RESOURCES_H})
-
-set(SCHEMA_CT "gschemas.compiled")
-set(SCHEMA_PN "${CMAKE_CURRENT_SOURCE_DIR}/${SCHEMA_CT}")
-
-add_custom_command(
-    OUTPUT "${SCHEMA_PN}"
-    COMMAND glib-compile-schemas
-    ARGS --strict
-         --targetdir=${CMAKE_CURRENT_SOURCE_DIR}/
-         ${CMAKE_CURRENT_SOURCE_DIR}/.
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/wcd.launch.pad.gschema.xml
-)
-
-add_custom_target(${SCHEMA_CT} ALL DEPENDS ${SCHEMA_PN})
+if (USE_GSCHEMA)
+    set(SCHEMA_CT "gschemas.compiled")
+    set(SCHEMA_PN "${CMAKE_CURRENT_SOURCE_DIR}/${SCHEMA_CT}")
+    add_custom_command(
+        OUTPUT "${SCHEMA_PN}"
+        COMMAND glib-compile-schemas
+        ARGS --strict
+             --targetdir=${CMAKE_CURRENT_SOURCE_DIR}/
+             ${CMAKE_CURRENT_SOURCE_DIR}/.
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/wcd.launch.pad.gschema.xml
+    )
+    add_custom_target(${SCHEMA_CT} ALL DEPENDS ${SCHEMA_PN})
+endif()
 
 file(GLOB_RECURSE CXX_SRCS *.cpp)
 file(GLOB_RECURSE C_SRCS *.c)
+list(APPEND C_SRCS ${RESOURCES_PN})
 
 if (WIN32)
     set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
