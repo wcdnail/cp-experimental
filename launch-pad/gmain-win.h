@@ -13,7 +13,7 @@ struct _GMainWin
     GtkPaned                           *panView;
     GtkGLArea                        *modelView;
     GtkTextView                         *logBox;
-    GtkToggleToolButton *logctlToggleScrollDown;
+    GtkToggleToolButton *cmdToggleLogScrollDown;
     GtkEntry           *cmdSingleCommandEditBox;
     GtkToolButton          *cmdRunSingleCommand;
 };

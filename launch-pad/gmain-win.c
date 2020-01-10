@@ -25,7 +25,7 @@ static void gmain_win_class_init(GMainWinClass *cls)
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, panView);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, modelView);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, logBox);
-    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, logctlToggleScrollDown);
+    gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdToggleLogScrollDown);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdSingleCommandEditBox);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(cls), GMainWin, cmdRunSingleCommand);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(cls), mainwin_OnMap);
@@ -162,6 +162,6 @@ static gboolean mainwin_OnConfigureEvent(GMainWin *win, GdkEvent *event, gpointe
 
 static gboolean mainwin_OnEvent(GMainWin *win, GdkEvent *event, gpointer user)
 {
-    logBoxTrace(LOGBOX_NOTE, "EVENT: [%p][%d]\n", user, event->type);
+    logBoxTrace(LOGBOX_NOTE, "EVENT: [%d]\n", event->type);
     return (FALSE);   
 }

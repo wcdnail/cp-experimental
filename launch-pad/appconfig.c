@@ -241,7 +241,7 @@ void appSettingsOnWindowInit(GMainWin *win)
     if (settings->appIsMaximized) {
         gtk_window_maximize(GTK_WINDOW(win));
     }
-    gtk_toggle_tool_button_set_active(win->logctlToggleScrollDown, TRUE);
+    gtk_toggle_tool_button_set_active(win->cmdToggleLogScrollDown, TRUE);
 }
 
 void appSettingsOnWindowClose(GMainWin *win)
