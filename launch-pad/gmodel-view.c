@@ -180,17 +180,6 @@ gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
             glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
         }
         glEnd();
-#if 0
-        // Test stuff
-        glBegin(GL_TRIANGLE_STRIP);
-        glColor4f(1, 0, 1, 1); glVertex3f(0, 2, 0);
-        glColor4f(1, 0, 0, 1); glVertex3f(-2, 0, 2);
-        glColor4f(0, 1, 0, 1); glVertex3f(2, 0, 2);
-        glColor4f(0, 0, 1, 1); glVertex3f(0, 0, -2);
-        glColor4f(1, 1, 0, 1); glVertex3f(0, 2, 0);
-        glColor4f(1, 0, 1, 1); glVertex3f(-2, 0, 2);
-        glEnd();
-#endif    
         if (currentScene->meshes) {
             g_list_foreach(currentScene->meshes, meshRender, NULL);
         }

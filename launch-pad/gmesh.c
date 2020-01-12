@@ -57,11 +57,17 @@ void meshFree(PGMesh mesh)
 
 void meshRender(PGMesh mesh)
 {
+    guint tricount;
     if(!mesh || !mesh->vertex || !mesh->index) {
         return ;
     }
     glPushMatrix();
-    glColor3f(0.5, 0.5, 1.0);
-
+    glColor4f(0.5, 0.5, 1, 1);
+    glBegin(GL_TRIANGLES);
+    tricount = mesh->vertex->len / 3;
+    for (guint i = 0; i < tricount; i++) {
+        //glVertex3d();
+    }
+    glEnd();
     glPopMatrix();    
 }
