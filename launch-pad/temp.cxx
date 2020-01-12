@@ -12,7 +12,7 @@ static guint model_view_create_shader(int shader_type, const char *source)
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_len);
         buffer = g_malloc(log_len + 1);
         glGetShaderInfoLog(shader, log_len, NULL, buffer);
-        logBoxTrace(LOGBOX_ERROR, "MODELVIEW load shader ERROR: [%d] %s\n", status, buffer);
+        lgTrace(LG_ERROR, "MODELVIEW load shader ERROR: [%d] %s\n", status, buffer);
         g_free(buffer);
         glDeleteShader(shader);
         shader = 0;
@@ -44,7 +44,7 @@ static void model_view_init_shaders(void)
             glGetProgramiv(defGLProgram, GL_INFO_LOG_LENGTH, &log_len);
             buffer = g_malloc(log_len + 1);
             glGetProgramInfoLog(defGLProgram, log_len, NULL, buffer);
-            logBoxTrace(LOGBOX_ERROR, "MODELVIEW link GL program ERROR: [%d] %s\n", status, buffer);
+            lgTrace(LG_ERROR, "MODELVIEW link GL program ERROR: [%d] %s\n", status, buffer);
             g_free (buffer);
             glDeleteProgram (defGLProgram);
             defGLProgram = 0;

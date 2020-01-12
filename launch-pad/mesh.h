@@ -2,19 +2,27 @@
 
 struct _GVertex
 {
-    double x;
-    double y;
-    double z;
+    double x, y, z; 
 };
 
 typedef struct _GVertex   GVertex;
 typedef struct _GVertex* PGVertex;
 
+struct _GTriangle 
+{
+     GVertex vertex[3]; 
+     GVertex    normal; 
+};
+
+typedef struct _GTriangle   GTriangle;
+typedef struct _GTriangle* PGTriangle;
+
 struct _GMesh
 {
-    GString  *name;
-    GArray *vertex;
-    GArray  *index;
+    GString        *name;
+    GString *description;
+    guint32        color;
+    GArray    *triangles;
 };
 
 typedef struct _GMesh   GMesh;
@@ -23,6 +31,7 @@ typedef struct _GMesh* PGMesh;
 PGMesh meshNew(const gchar *name);
 void meshFree(PGMesh mesh);
 void meshRender(PGMesh mesh);
+void putGlVertexTriangle(PGTriangle triangle);
 
 #define vertexSet(vert, NX, NY, NZ) \
     do {                            \

@@ -4,6 +4,13 @@
 #include "filemanip.h"
 #include "logbox.h"
 
+//---------------------------------------------------------------------------------------------------------------------
+
+static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm);
+static PGMesh stlLoadBin(const gchar *pathname, GInputStream *istm);
+
+//---------------------------------------------------------------------------------------------------------------------
+
 PGMesh stlLoadFile(const gchar *pathname) 
 {
     return NULL;
@@ -13,9 +20,8 @@ PGMesh stlLoadResource(const gchar *pathname)
 {
     const gchar *errorTitle = "unknown";
     GError           *error = NULL;
-    GInputStream      *istm = NULL;
     PGMesh           result = NULL;
-    istm = g_resources_open_stream(pathname, 0, &error);
+    GInputStream      *istm = g_resources_open_stream(pathname, 0, &error);
     if (!istm) {
         errorTitle = "resource open";
         goto onError;
@@ -23,7 +29,7 @@ PGMesh stlLoadResource(const gchar *pathname)
     result = stlLoadAsc(pathname, istm);
     goto noError;
 onError:
-    logBoxTrace(LOGBOX_ERROR, "LOADSTLRES [%s] %s ERROR: [%d] %s\n", 
+    lgTrace(LG_ERROR, "LOADSTLRES [%s] %s ERROR: [%d] %s\n", 
         pathname, 
         errorTitle,
         error ? error->code : errno, 
@@ -34,6 +40,8 @@ noError:
     }
     return result;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 enum _ASTLParserState
 {
@@ -48,6 +56,23 @@ enum _ASTLParserState
     _ASTL_END_FILE,
 };
 
+static const gchar* astl_parser_state_str(gint state) 
+{
+    switch (state) {
+    case _ASTL_INVALID:         return ("UNKNW");
+    case _ASTL_SKIP_LINE:       return ("SKIPL");
+    case _ASTL_BEG_FILE:        return ("FILEB");
+    case _ASTL_BEG_FACET:       return ("FACEB");
+    case _ASTL_BEG_OUTER_LOOP:  return ("LOOPB");
+    case _ASTL_VERTEX:          return ("VERTX");
+    case _ASTL_END_OUTER_LOOP:  return ("LOOPE");
+    case _ASTL_END_FACET:       return ("FACEE");
+    case _ASTL_END_FILE:        return ("FILEE");
+    }
+    lgTrace(LG_ERROR, "INVALID ASTL parser state: %d\n", state);
+    g_assert_not_reached();
+}
+
 static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **arg)
 {
     const char *token;
@@ -59,6 +84,12 @@ static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **a
         ++token;
     }
     switch(g_ascii_tolower(*token)) {
+    case 's':
+        if (0 == g_ascii_strncasecmp(token, "solid", 5)) {
+            (*arg) = token + 6;
+            return _ASTL_BEG_FILE;
+        }
+        break;
     case 'e':
         if (0 == g_ascii_strncasecmp(token, "end", 3)) {
             if (0 == g_ascii_strncasecmp(token + 3, "facet", 5)) {
@@ -74,6 +105,9 @@ static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **a
         break;
     case 'f':
         if (0 == g_ascii_strncasecmp(token, "facet", 5)) {
+            if (0 == g_ascii_strncasecmp(token + 6, "normal", 6)) {
+                (*arg) = token + 13;
+            }
             return _ASTL_BEG_FACET;
         }
     case 'o':
@@ -91,32 +125,36 @@ static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **a
     return _ASTL_INVALID;
 }
 
-static gboolean astl_get_vertex(GLfloat *vdata, const gchar *arg)
+static gboolean astl_get_vertex(PGVertex vertex, const gchar *arg)
 {
     gchar **varg = g_strsplit(arg, " ", 3);
     if (!varg) {
-        return FALSE;
+        return (FALSE);
     }
-    vdata[0] = (GLfloat)g_ascii_strtod(varg[0], NULL);
-    vdata[1] = (GLfloat)g_ascii_strtod(varg[1], NULL);
-    vdata[2] = (GLfloat)g_ascii_strtod(varg[2], NULL);
+    vertex->x = (GLfloat)g_ascii_strtod(varg[0], NULL);
+    vertex->y = (GLfloat)g_ascii_strtod(varg[1], NULL);
+    vertex->z = (GLfloat)g_ascii_strtod(varg[2], NULL);
     g_strfreev(varg);
-    return TRUE;
+    return (TRUE);
 }
 
-PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm) 
+static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm) 
 {
-    const gchar  *errorTitle = "unknown";
-    const gchar *parserTitle = "invalid parser state";
-    GError            *error = NULL;
-    PGMesh            result = NULL;
-    gssize            readed = 0;
-    GDataInputStream  *idata = NULL;
-    gchar              *line = NULL;
-    guint            lineNum = 2; // skip header line
-    gint           prevState = _ASTL_BEG_FILE;
-    guint             vindex = 0;
-    guint             iindex = 0;
+    const gchar    *errorTitle = "unknown";
+    const gchar *parseErrorMsg = "invalid parser state";
+    GError              *error = NULL;
+    PGMesh              result = NULL;
+    gssize              readed = 0;
+    GDataInputStream    *idata = NULL;
+    gchar                *line = NULL;
+    guint              lineNum = 1; // skip header line
+    gint                 state = _ASTL_INVALID;
+    gint             prevState = _ASTL_BEG_FILE;
+    guint               vindex = 0;
+    const gchar           *arg = NULL;
+    GArray          *triangles = NULL;
+    PGTriangle        triangle = NULL;
+    GTriangle      triangleBuf = {0};
     if (!istm) {
         errorTitle = "input stream validation";
         goto onError;
@@ -135,80 +173,114 @@ PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
         g_object_unref(idata);
         return stlLoadBin(pathname, istm);
     }
+    triangles = g_array_new(FALSE, TRUE, sizeof(GTriangle));
+    if (!triangles) {
+        errorTitle = "temp triangles array allocating";
+        goto onError;
+    }
     result = meshNew(pathname);
     if (!result) {
         errorTitle = "mesh allocating";
         goto onError;
     }
     do {
-        gint       state = 0;
-        const gchar *arg = NULL;
-        readed = 0;
-        line = g_data_input_stream_read_line(idata, &readed, NULL, &error);
-        if (readed < 0) {
-            errorTitle = "data input stream read";
-            goto onError;
-        }
         state = astl_get_parser_state(line, readed, &arg);
         switch (state) {
-        case _ASTL_BEG_FACET: break; // TODO: parse normal & check prevState
-        case _ASTL_END_FACET: break; // TODO: check prevState
-        case _ASTL_END_FILE:  break; // TODO: check prevState
-        case _ASTL_SKIP_LINE: break;
+        case _ASTL_BEG_FILE: {
+            result->description = g_string_new(arg);
+            break;
+        }
+        case _ASTL_BEG_FACET: {
+            if (triangle) {
+                parseErrorMsg = "current triangle not NULL";
+                goto parserError;
+            }
+            triangle = &triangleBuf;
+            if (arg && !astl_get_vertex(&triangle->normal, arg)) {
+                parseErrorMsg = "parsing normal error";
+                goto parserError;
+            }
+            break;
+        }
         case _ASTL_BEG_OUTER_LOOP:   
             if (prevState != _ASTL_BEG_FACET) {
-                parserTitle = "outer loop is outside facet";
+                parseErrorMsg = "outer loop is outside facet";
                 goto parserError;
             }
             vindex = 0;
             break;
         case _ASTL_VERTEX: {
-            GLfloat vdata[3] = { 0 };
-            if (!astl_get_vertex(vdata, arg)) {
-                parserTitle = "parsing vertex error";
+            if (!triangle) {
+                parseErrorMsg = "current triangle is NULL";
                 goto parserError;
             }
-            g_array_insert_vals(result->vertex, vindex, vdata, sizeof(vdata));
-            //g_array_append_vals(result->index, &vindex, sizeof(vindex));
-            vindex += 3;
-            ++iindex;
+            if (vindex > 2) {
+                parseErrorMsg = "vertex count more than 3";
+                goto parserError;
+            }
+            if (!astl_get_vertex(&triangle->vertex[vindex], arg)) {
+                parseErrorMsg = "parsing vertex error";
+                goto parserError;
+            }
+            ++vindex;
             break;
         }
         case _ASTL_END_OUTER_LOOP:
             if (prevState != _ASTL_VERTEX) {
-                parserTitle = "outer loop ends unexpectedly";
+                parseErrorMsg = "outer loop ends unexpectedly";
                 goto parserError;
             }
+            if (!triangle) {
+                parseErrorMsg = "current triangle is NULL";
+                goto parserError;
+            }
+            g_array_append_vals(triangles, &triangle, 1);
+            triangle = NULL;
             break;
+        case _ASTL_END_FACET: break;
+        case _ASTL_END_FILE:  break;
+        case _ASTL_SKIP_LINE: break;
         default:
 parserError:        
-            logBoxTrace(LOGBOX_ERROR, "LOADSTLA [%s(%d)] %s [%d]\n", pathname, lineNum, parserTitle, state);
-            readed = 0;
+            lgTrace(LG_ERROR, "LOADSTLA %s(%d): [%s] %s\n", pathname, lineNum, astl_parser_state_str(state), parseErrorMsg);
+            errorTitle = NULL;
+            goto onError;
         }
         if (state > _ASTL_SKIP_LINE) {
             prevState = state;
         }
         ++lineNum;
+        readed = 0;
+        line = g_data_input_stream_read_line(idata, &readed, NULL, &error);
     }
     while (readed > 0);
-    logBoxTrace(LOGBOX_ASSERT, "LOADSTLA [%s] [V:%d; I:%d]\n", pathname, result->vertex->len, result->index->len);
+    result->triangles = triangles;
+    triangles = NULL;
+    lgTrace(LG_ASSERT, "LOADSTLA '%s' %s [T:%d]\n", result->name->str, result->description->str, result->triangles->len);
     goto noError;
 onError:
-    logBoxTrace(LOGBOX_ERROR, "LOADSTLA [%s] %s ERROR: [%d] %s\n", 
-        pathname,
-        errorTitle,
-        error ? error->code : errno, 
-        error ? error->message : strerror(errno));
+    if (errorTitle) {
+        lgTrace(LG_ERROR, "LOADSTLA [%s] %s ERROR: [%d] %s\n", 
+            pathname,
+            errorTitle,
+            error ? error->code : errno, 
+            error ? error->message : strerror(errno));
+    }
     meshFree(result);
     result = NULL;
+noError:
+    if (triangles) {
+        g_array_free(triangles, TRUE);
+    }
     if (idata) {
         g_object_unref(idata);
     }
-noError:
     return result;
 }
 
-PGMesh stlLoadBin(const gchar *pathname, GInputStream *istm)
+//---------------------------------------------------------------------------------------------------------------------
+
+static PGMesh stlLoadBin(const gchar *pathname, GInputStream *istm)
 {
     return NULL;
 }

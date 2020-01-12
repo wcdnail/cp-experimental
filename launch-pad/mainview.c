@@ -28,7 +28,7 @@ PGScene sceneNew(GList *meshes)
     scene->ly = 0;
     goto noError;
 onError:
-    logBoxTrace(LOGBOX_ERROR, "MODELVEW %s ERROR: [%d] %s\n", errorTitle, errno, strerror(errno));
+    lgTrace(LG_ERROR, "MODELVEW %s ERROR: [%d] %s\n", errorTitle, errno, strerror(errno));
     sceneFree(scene);
     scene = NULL;
 noError:
@@ -67,12 +67,12 @@ void modelView_Init(GtkGLArea *ctl)
     GError *error = NULL;
     gtk_gl_area_make_current(ctl);
     if ((error = gtk_gl_area_get_error(ctl)) != NULL) {
-        logBoxTrace(LOGBOX_ERROR, "MODELVIEW init ERROR: [%d] %s\n", error->code, error->message);
+        lgTrace(LG_ERROR, "MODELVIEW init ERROR: [%d] %s\n", error->code, error->message);
         return;
     }
-    logBoxTrace(LOGBOX_MSG, "Using OpenGL : %s\n", glGetString(GL_VERSION));
-    logBoxTrace(LOGBOX_MSG, "GL vendor    : %s\n", glGetString(GL_VENDOR));
-    logBoxTrace(LOGBOX_MSG, "GL renderer  : %s\n", glGetString(GL_RENDERER));
+    lgTrace(LG_MSG, "Using OpenGL : %s\n", glGetString(GL_VERSION));
+    lgTrace(LG_MSG, "GL vendor    : %s\n", glGetString(GL_VENDOR));
+    lgTrace(LG_MSG, "GL renderer  : %s\n", glGetString(GL_RENDERER));
     glClearColor(1, 1, 1, 1);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
@@ -86,7 +86,7 @@ void modelView_Free(GtkGLArea *ctl)
     currentScene = NULL;
     gtk_gl_area_make_current(ctl);
     if ((error = gtk_gl_area_get_error(ctl)) != NULL) {
-        logBoxTrace(LOGBOX_ERROR, "GL FREE: [%d] %s\n", error->code, error->message);
+        lgTrace(LG_ERROR, "GL FREE: [%d] %s\n", error->code, error->message);
         return;
     }
 }

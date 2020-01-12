@@ -46,7 +46,7 @@ guchar* fileRead(const gchar *pathname, gssize *readed)
     }
     goto noError;
 onError:
-    logBoxTrace(LOGBOX_ERROR, "FILEREAD [%s] %s ERROR: [%d] %s\n", 
+    lgTrace(LG_ERROR, "FILEREAD [%s] %s ERROR: [%d] %s\n", 
         pathname, 
         errorTitle,
         error ? error->code : errno, 

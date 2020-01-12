@@ -23,7 +23,7 @@ void logBoxInit(GtkTextView *view)
     }
 }
 
-void logBoxTrace(gint flags, const gchar *format, ...)
+void lgTrace(gint flags, const gchar *format, ...)
 {
     va_list ap;
     va_start(ap, format);
@@ -59,15 +59,15 @@ static void glog_put_text_ui(gint flags, gchar *title, GString *message)
     GtkTextIter iter;
     gtk_text_buffer_get_end_iter(mainLogBuffer, &iter);
     gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, title, -1, "bold", 
-        LOGBOX_ERROR == flags ? "error_bg" : "msghead_bg", 
-        LOGBOX_ERROR == flags ? "error_fg" : "msghead_fg", 
+        LG_ERROR == flags ? "error_bg" : "msghead_bg", 
+        LG_ERROR == flags ? "error_fg" : "msghead_fg", 
         NULL);
     gtk_text_buffer_get_end_iter(mainLogBuffer, &iter);
     switch (flags) {
-    case LOGBOX_ASSERT: gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", NULL); break;
-    case LOGBOX_NOTE:   gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "italic", NULL); break;
-    case LOGBOX_WARN:   gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "warn_bg", "warn_fg", NULL); break;
-    case LOGBOX_ERROR:  gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "error_bg", "error_fg", NULL); break;
+    case LG_ASSERT: gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", NULL); break;
+    case LG_NOTE:   gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "italic", NULL); break;
+    case LG_WARN:   gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "warn_bg", "warn_fg", NULL); break;
+    case LG_ERROR:  gtk_text_buffer_insert_with_tags_by_name(mainLogBuffer, &iter, message->str, (gint)message->len, "bold", "error_bg", "error_fg", NULL); break;
     default:            gtk_text_buffer_insert(mainLogBuffer, &iter, message->str, (gint)message->len);
     }
     if (mainLogScrollDown) {

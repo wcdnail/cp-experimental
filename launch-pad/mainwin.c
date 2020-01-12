@@ -63,10 +63,10 @@ static void mainwinSettingsInit(GMainWin *win)
 static gboolean test_log_box(gpointer data)
 {
     static int j = 1;
-    logBoxTrace(LOGBOX_MSG, "%03d: Message message message message message\n", j++);
-    logBoxTrace(LOGBOX_NOTE, "%03d: Note Message\n", j++);
-    logBoxTrace(LOGBOX_WARN, "%03d: Warning Message message message message\n", j++);
-    logBoxTrace(LOGBOX_ERROR, "%03d: Error Message message message message message message\n", j++);
+    lgTrace(LG_MSG, "%03d: Message message message message message\n", j++);
+    lgTrace(LG_NOTE, "%03d: Note Message\n", j++);
+    lgTrace(LG_WARN, "%03d: Warning Message message message message\n", j++);
+    lgTrace(LG_ERROR, "%03d: Error Message message message message message message\n", j++);
     return TRUE;
 }
 #endif

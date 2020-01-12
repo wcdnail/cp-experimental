@@ -13,23 +13,16 @@ PGMesh meshNew(const gchar *name)
         goto onError;
     }
     tempMesh->name = g_string_new(name);
-    tempMesh->vertex = g_array_new(FALSE, TRUE, sizeof(GLfloat));
-    tempMesh->index = g_array_new(FALSE, TRUE, sizeof(GLuint));
+    tempMesh->description = NULL;
+    tempMesh->color = 0xff00ff00;
+    tempMesh->triangles = NULL;
     if (!tempMesh->name) {
         errorTitle = "name allocation";
         goto onError;
     }
-    if (!tempMesh->vertex) {
-        errorTitle = "vertices allocation";
-        goto onError;
-    }
-    if (!tempMesh->vertex) {
-        errorTitle = "indices allocation";
-        goto onError;
-    }
     goto noError;
 onError:
-    logBoxTrace(LOGBOX_ERROR, "GMESH %s ERROR: [%d] %s\n", errorTitle, errno, strerror(errno));
+    lgTrace(LG_ERROR, "GMESH %s ERROR: [%d] %s\n", errorTitle, errno, strerror(errno));
     meshFree(tempMesh);
     tempMesh = NULL;
 noError:
@@ -39,13 +32,13 @@ noError:
 void meshFree(PGMesh mesh)
 {
     if (mesh) {
-        if (mesh->index) {
-            g_array_free(mesh->index, TRUE);
-            mesh->index = NULL;
+        if (mesh->triangles) {
+            g_array_free(mesh->triangles, TRUE);
+            mesh->triangles = NULL;
         }
-        if (mesh->vertex) {
-            g_array_free(mesh->vertex, TRUE);
-            mesh->vertex = NULL;
+        if (mesh->description) {
+            g_string_free(mesh->description, TRUE);
+            mesh->description = NULL;
         }
         if (mesh->name) {
             g_string_free(mesh->name, TRUE);
@@ -58,16 +51,34 @@ void meshFree(PGMesh mesh)
 void meshRender(PGMesh mesh)
 {
     guint tricount;
-    if(!mesh || !mesh->vertex || !mesh->index) {
+    if(!mesh || !mesh->triangles) {
         return ;
     }
     glPushMatrix();
-    glColor4f(0.5, 0.5, 1, 1);
+    glColor4bv((const GLbyte*)&mesh->color);
     glBegin(GL_TRIANGLES);
-    tricount = mesh->vertex->len / 3;
-    for (guint i = 0; i < tricount; i++) {
-        //glVertex3d();
+    for (guint i = 0; i < mesh->triangles->len; i++) {
+        PGTriangle trianle = &g_array_index(mesh->triangles, GTriangle, i);
+        putGlVertexTriangle(trianle);
     }
     glEnd();
     glPopMatrix();    
+}
+
+void putGlVertexTriangle(PGTriangle triangle)
+{
+    lgTrace(LG_MSG, "TRI:\n"
+        "    A: [%f %f %f]\n"
+        "    B: [%f %f %f]\n"
+        "    C: [%f %f %f]\n"
+        "    N: [%f %f %f]\n", 
+        triangle->vertex[0].x, triangle->vertex[0].y, triangle->vertex[0].z,
+        triangle->vertex[1].x, triangle->vertex[1].y, triangle->vertex[1].z,
+        triangle->vertex[2].x, triangle->vertex[2].y, triangle->vertex[2].z,
+        triangle->normal.x, triangle->normal.y, triangle->normal.z
+    );
+    glNormal3d(triangle->normal.x, triangle->normal.y, triangle->normal.z);
+    for (guint i = 0; i < 3; i++) {
+        glVertex3d(triangle->vertex[i].x, triangle->vertex[i].y, triangle->vertex[i].z);
+    }
 }
