@@ -1,8 +1,6 @@
 #include <gtk/gtk.h>
 #include "misc.h"
 #include <glib-object.h>
-#include <json-glib/json-glib.h>
-#include <json-glib/json-gobject.h>
 
 #define _DEF_GRECT_MAX_VALUE 1000000
 

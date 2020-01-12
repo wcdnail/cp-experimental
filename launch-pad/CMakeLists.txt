@@ -5,13 +5,29 @@ project(launch-pad)
 option(USE_GSCHEMA "Compile & install GSettings schema" ON)
 
 if (MSVC)
-    find_path(GTK_INCLUDE_DIR gtk.h)
-    find_library(GTK_LIB gtk REQUIRED)
+    set(VCPKGDIR "$ENV{VCPKG_ROOT}")
+    set(GLIB_TOOLS_PATH "${VCPKGDIR}/installed/x64-windows/tools/glib")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(VCPKG_BUILDCONF_DIR "${VCPKGDIR}/installed/x64-windows/debug")
+    else()
+        set(VCPKG_BUILDCONF_DIR "${VCPKGDIR}/installed/x64-windows")
+    endif()
     list(APPEND ALL_INC_DIRS 
-        ${GTK_INCLUDE_DIR}
+        "${VCPKGDIR}/installed/x64-windows/include"
+    )
+    list(APPEND ALL_LIB_DIRS 
+        "${VCPKG_BUILDCONF_DIR}/lib"
     )
     list(APPEND ALL_LIBS
-        ${GTK_LIB}
+        gtk-3.0
+        gio-2.0
+        glib-2.0
+        gmodule-2.0
+        gobject-2.0
+        gthread-2.0
+        gdk-3.0
+        gdk_pixbuf-2.0
+        epoxy
     )
 else()
     find_package(PkgConfig REQUIRED)
@@ -29,23 +45,23 @@ else()
     list(APPEND ALL_C_DEFS   ${EPOXY_CFLAGS_OTHER})
     list(APPEND ALL_INC_DIRS ${EPOXY_INCLUDE_DIRS})
     list(APPEND ALL_LIB_DIRS ${EPOXY_LIBRARY_DIRS})
-    
-    list(REMOVE_DUPLICATES ALL_C_DEFS)
-    add_definitions(${ALL_C_DEFS})
 
-    list(REMOVE_DUPLICATES ALL_INC_DIRS)
-    include_directories(SYSTEM ${ALL_INC_DIRS})
-
-    list(REMOVE_DUPLICATES ALL_LIB_DIRS)
-    link_directories(${ALL_LIB_DIRS})
-    
     list(APPEND ALL_LIBS
         ${GTK3_LIBRARIES}
         ${JSONGLIB_LIBRARIES}
         ${EPOXY_LIBRARIES}
     )
-    list(REMOVE_DUPLICATES ALL_LIBS)
+    add_definitions(-D_USING_GLIB_JSON)
 endif()
+
+list(REMOVE_DUPLICATES ALL_C_DEFS)
+list(REMOVE_DUPLICATES ALL_INC_DIRS)
+list(REMOVE_DUPLICATES ALL_LIB_DIRS)
+list(REMOVE_DUPLICATES ALL_LIBS)
+
+add_definitions(${ALL_C_DEFS})
+include_directories(SYSTEM ${ALL_INC_DIRS})
+link_directories(${ALL_LIB_DIRS})
 
 set(RESOURCES_CT "${PROJECT_NAME}-resources")
 set(RESOURCES_PN "${CMAKE_CURRENT_BINARY_DIR}/${RESOURCES_CT}.c")
@@ -59,7 +75,7 @@ set(RESOURCES_LIST
 )
 add_custom_command(
     OUTPUT "${RESOURCES_PN}"
-    COMMAND glib-compile-resources
+    COMMAND ${GLIB_TOOLS_PATH}/glib-compile-resources
     ARGS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
          --target=${RESOURCES_PN} 
          --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} 
@@ -73,7 +89,7 @@ if (USE_GSCHEMA)
     set(SCHEMA_PN "${SCHEMA_BD}/${SCHEMA_CT}")
     add_custom_command(
         OUTPUT "${SCHEMA_PN}"
-        COMMAND glib-compile-schemas
+        COMMAND ${GLIB_TOOLS_PATH}/glib-compile-schemas
         ARGS --strict
              --targetdir=${SCHEMA_BD}/
              ${CMAKE_CURRENT_SOURCE_DIR}/.
@@ -82,6 +98,7 @@ if (USE_GSCHEMA)
     add_custom_target(${SCHEMA_CT} ALL DEPENDS ${SCHEMA_PN})
 endif()
 
+file(GLOB_RECURSE H_SRCS *.h)
 file(GLOB_RECURSE CXX_SRCS *.cpp)
 file(GLOB_RECURSE C_SRCS *.c)
 list(APPEND C_SRCS ${RESOURCES_PN})
@@ -101,6 +118,7 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME}
+    ${H_SRCS}
     ${C_SRCS}
     ${CXX_SRCS}
     ${OS_SPEC_SRCS}

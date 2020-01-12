@@ -1,4 +1,11 @@
 # GTK+ 3 experimental
+## Windows build (VCPKG)
+```
+git clone https://github.com/Microsoft/vcpkg
+cd vcpkg
+.\bootstrap-vcpkg.bat
+vcpkg install gtk:x64-windows
+```
 ## Windows build (MSYS)
  - git cmake <a target="_blank" href="http://repo.msys2.org/distrib/">msys</a>
  - required packages

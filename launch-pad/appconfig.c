@@ -3,8 +3,10 @@
 #include "logbox.h"
 #include "app.h"
 #include <glib-object.h>
+#ifdef _USING_GLIB_JSON
 #include <json-glib/json-glib.h>
 #include <json-glib/json-gobject.h>
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -144,7 +146,9 @@ PAppSettings appSettings(void)
             goto onError;
         }
         if (g_file_get_contents(currentSettingsPathname->str, &jsonstr, &readed, &error)) {
+#ifdef _USING_GLIB_JSON
             currentSettings = (PAppSettings)json_gobject_from_data(APPSETTINGS_TYPE_OBJECT, jsonstr, readed, &error);
+#endif
             if (!currentSettings) {
                 errorTitle = "deserializing object from json FAILURE";
                 goto onError;
@@ -196,7 +200,9 @@ void appSettingsSave(void)
         errorTitle = "object is NULL";
         goto onError;
     }
+#ifdef _USING_GLIB_JSON
     settingsJson = json_gobject_to_data(G_OBJECT(currentSettings), &settingsJsonLen);
+#endif
     if (!settingsJson) {
         errorTitle = "json serialization failed";
         goto onError;
@@ -253,7 +259,7 @@ void appSettingsOnWindowClose(GMainWin *win)
     GRect          rcTemp = { 0 };
     settings->appIsMaximized = gtk_window_is_maximized(GTK_WINDOW(win));
     if (!settings->appIsMaximized) {
-        gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), &rcTemp.x, &rcTemp.y, &rcTemp.cx, &rcTemp.cy);
+        gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(win)), &rcTemp.x, &rcTemp.y, &rcTemp.cx, &rcTemp.cy);
         grect_set_rect(settings->appRect, &rcTemp);
     }
 }
