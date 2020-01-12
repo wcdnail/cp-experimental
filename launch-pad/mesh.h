@@ -2,7 +2,7 @@
 
 struct _GVertex
 {
-    double x, y, z;
+    gdouble x, y, z;
 };
 
 typedef struct _GVertex   GVertex;
@@ -32,7 +32,6 @@ gboolean vertexFromString(PGVertex vertex, const gchar *str);
 PGMesh meshNew(const gchar *name);
 void meshFree(PGMesh mesh);
 void meshRender(PGMesh mesh);
-void putGlVertexTriangle(PGTriangle triangle);
 
 #define vertexSet(vert, NX, NY, NZ) \
     do {                            \

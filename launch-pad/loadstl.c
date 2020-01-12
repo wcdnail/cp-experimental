@@ -1,7 +1,6 @@
 #include <gtk/gtk.h>
 #include <epoxy/gl.h>
 #include "loadstl.h"
-#include "filemanip.h"
 #include "logbox.h"
 
 //---------------------------------------------------------------------------------------------------------------------

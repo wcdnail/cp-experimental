@@ -9,9 +9,9 @@ gboolean vertexFromString(PGVertex vertex, const gchar *str)
     if (!varg) {
         return (FALSE);
     }
-    vertex->x = (GLfloat)g_ascii_strtod(varg[0], NULL);
-    vertex->y = (GLfloat)g_ascii_strtod(varg[1], NULL);
-    vertex->z = (GLfloat)g_ascii_strtod(varg[2], NULL);
+    vertex->x = g_ascii_strtod(varg[0], NULL);
+    vertex->y = g_ascii_strtod(varg[1], NULL);
+    vertex->z = g_ascii_strtod(varg[2], NULL);
     g_strfreev(varg);
     return (TRUE);
 #ifdef _DEBUG_MESH_DATA
@@ -39,7 +39,7 @@ PGMesh meshNew(const gchar *name)
     }
     tempMesh->name = g_string_new(name);
     tempMesh->description = NULL;
-    tempMesh->color = 0xff00ff00;
+    tempMesh->color = 0xff000000;
     tempMesh->triangles = NULL;
     if (!tempMesh->name) {
         errorTitle = "name allocation";
@@ -73,6 +73,27 @@ void meshFree(PGMesh mesh)
     }
 }
 
+static void meshPutVertexTriangle(PGTriangle triangle)
+{
+    //glNormal3d(triangle->normal.x, triangle->normal.y, triangle->normal.z);
+    for (guint i = 0; i < 3; i++) {
+        glVertex3d(triangle->vertex[i].x, triangle->vertex[i].y, triangle->vertex[i].z);
+    }
+}
+
+static void meshPutTriangles(PGMesh mesh)
+{
+    //guint32 wirecolor = 0xff000000;
+    //glColor4bv((const GLbyte*)&wirecolor);
+    glColor4bv((const GLbyte*)&mesh->color);
+    glBegin(GL_TRIANGLES);
+    for (guint i = 0; i < mesh->triangles->len; i++) {
+        PGTriangle trianle = &g_array_index(mesh->triangles, GTriangle, i);
+        meshPutVertexTriangle(trianle);
+    }
+    glEnd();
+}
+
 void meshRender(PGMesh mesh)
 {
     guint tricount;
@@ -80,20 +101,7 @@ void meshRender(PGMesh mesh)
         return ;
     }
     glPushMatrix();
-    glColor4bv((const GLbyte*)&mesh->color);
-    glBegin(GL_TRIANGLES);
-    for (guint i = 0; i < mesh->triangles->len; i++) {
-        PGTriangle trianle = &g_array_index(mesh->triangles, GTriangle, i);
-        putGlVertexTriangle(trianle);
-    }
-    glEnd();
-    glPopMatrix();    
-}
-
-void putGlVertexTriangle(PGTriangle triangle)
-{
-    glNormal3d(triangle->normal.x, triangle->normal.y, triangle->normal.z);
-    for (guint i = 0; i < 3; i++) {
-        glVertex3d(triangle->vertex[i].x, triangle->vertex[i].y, triangle->vertex[i].z);
-    }
+    meshPutTriangles(mesh);
+    //meshPutLines(mesh);
+    glPopMatrix();
 }
