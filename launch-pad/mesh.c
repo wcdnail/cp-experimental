@@ -3,6 +3,31 @@
 #include "mesh.h"
 #include "logbox.h"
 
+gboolean vertexFromString(PGVertex vertex, const gchar *str)
+{
+    gchar **varg = g_strsplit(str, " ", 3);
+    if (!varg) {
+        return (FALSE);
+    }
+    vertex->x = (GLfloat)g_ascii_strtod(varg[0], NULL);
+    vertex->y = (GLfloat)g_ascii_strtod(varg[1], NULL);
+    vertex->z = (GLfloat)g_ascii_strtod(varg[2], NULL);
+    g_strfreev(varg);
+    return (TRUE);
+#ifdef _DEBUG_MESH_DATA
+    lgTrace(LG_MSG, "TRI:\n"
+        "    A: [%f %f %f]\n"
+        "    B: [%f %f %f]\n"
+        "    C: [%f %f %f]\n"
+        "    N: [%f %f %f]\n",
+        triangle->vertex[0].x, triangle->vertex[0].y, triangle->vertex[0].z,
+        triangle->vertex[1].x, triangle->vertex[1].y, triangle->vertex[1].z,
+        triangle->vertex[2].x, triangle->vertex[2].y, triangle->vertex[2].z,
+        triangle->normal.x, triangle->normal.y, triangle->normal.z
+    );
+#endif
+}
+
 PGMesh meshNew(const gchar *name)
 {
     const gchar *errorTitle = NULL;
@@ -67,16 +92,6 @@ void meshRender(PGMesh mesh)
 
 void putGlVertexTriangle(PGTriangle triangle)
 {
-    lgTrace(LG_MSG, "TRI:\n"
-        "    A: [%f %f %f]\n"
-        "    B: [%f %f %f]\n"
-        "    C: [%f %f %f]\n"
-        "    N: [%f %f %f]\n", 
-        triangle->vertex[0].x, triangle->vertex[0].y, triangle->vertex[0].z,
-        triangle->vertex[1].x, triangle->vertex[1].y, triangle->vertex[1].z,
-        triangle->vertex[2].x, triangle->vertex[2].y, triangle->vertex[2].z,
-        triangle->normal.x, triangle->normal.y, triangle->normal.z
-    );
     glNormal3d(triangle->normal.x, triangle->normal.y, triangle->normal.z);
     for (guint i = 0; i < 3; i++) {
         glVertex3d(triangle->vertex[i].x, triangle->vertex[i].y, triangle->vertex[i].z);

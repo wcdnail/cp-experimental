@@ -4,7 +4,7 @@ project(cp-experimental)
 
 set(REL_DEFS          "-DNDEBUG")
 set(DBG_DEFS          "-D_DEBUG")
-set(MSVC_CFLAGS       "")
+set(MSVC_CFLAGS       "/wd4047")
 set(GNU_CFLAGS        "-Wno-incompatible-pointer-types \
 -Wno-int-to-pointer-cast \
 -Wno-pointer-to-int-cast \
@@ -20,7 +20,7 @@ set(MinSizeRel_CFLAGS "${OPT_CFLAGS}")
 
 set(CONF_CFLAGS       "${${CMAKE_BUILD_TYPE}_CFLAGS}")
 set(COMPILER_CFLAGS   "${${CMAKE_C_COMPILER_ID}_CFLAGS}")
-set(CMAKE_C_FLAGS     "${ALL_DEFS} ${CONF_CFLAGS} ${COMPILER_C_FLAGS}")
+set(CMAKE_C_FLAGS     "${ALL_DEFS} ${CONF_CFLAGS} ${COMPILER_CFLAGS}")
 set(CMAKE_CXX_FLAGS   "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 if (WIN32)

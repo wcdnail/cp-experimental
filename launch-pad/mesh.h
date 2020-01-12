@@ -2,7 +2,7 @@
 
 struct _GVertex
 {
-    double x, y, z; 
+    double x, y, z;
 };
 
 typedef struct _GVertex   GVertex;
@@ -28,6 +28,7 @@ struct _GMesh
 typedef struct _GMesh   GMesh;
 typedef struct _GMesh* PGMesh;
 
+gboolean vertexFromString(PGVertex vertex, const gchar *str);
 PGMesh meshNew(const gchar *name);
 void meshFree(PGMesh mesh);
 void meshRender(PGMesh mesh);

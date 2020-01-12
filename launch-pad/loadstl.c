@@ -71,6 +71,7 @@ static const gchar* astl_parser_state_str(gint state)
     }
     lgTrace(LG_ERROR, "INVALID ASTL parser state: %d\n", state);
     g_assert_not_reached();
+    return (NULL);
 }
 
 static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **arg)
@@ -125,19 +126,6 @@ static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **a
     return _ASTL_INVALID;
 }
 
-static gboolean astl_get_vertex(PGVertex vertex, const gchar *arg)
-{
-    gchar **varg = g_strsplit(arg, " ", 3);
-    if (!varg) {
-        return (FALSE);
-    }
-    vertex->x = (GLfloat)g_ascii_strtod(varg[0], NULL);
-    vertex->y = (GLfloat)g_ascii_strtod(varg[1], NULL);
-    vertex->z = (GLfloat)g_ascii_strtod(varg[2], NULL);
-    g_strfreev(varg);
-    return (TRUE);
-}
-
 static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm) 
 {
     const gchar    *errorTitle = "unknown";
@@ -147,7 +135,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
     gssize              readed = 0;
     GDataInputStream    *idata = NULL;
     gchar                *line = NULL;
-    guint              lineNum = 1; // skip header line
+    guint              lineNum = 1;
     gint                 state = _ASTL_INVALID;
     gint             prevState = _ASTL_BEG_FILE;
     guint               vindex = 0;
@@ -196,7 +184,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
                 goto parserError;
             }
             triangle = &triangleBuf;
-            if (arg && !astl_get_vertex(&triangle->normal, arg)) {
+            if (arg && !vertexFromString(&triangle->normal, arg)) {
                 parseErrorMsg = "parsing normal error";
                 goto parserError;
             }
@@ -218,7 +206,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
                 parseErrorMsg = "vertex count more than 3";
                 goto parserError;
             }
-            if (!astl_get_vertex(&triangle->vertex[vindex], arg)) {
+            if (!vertexFromString(&triangle->vertex[vindex], arg)) {
                 parseErrorMsg = "parsing vertex error";
                 goto parserError;
             }
@@ -234,7 +222,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
                 parseErrorMsg = "current triangle is NULL";
                 goto parserError;
             }
-            g_array_append_vals(triangles, &triangle, 1);
+            g_array_append_vals(triangles, triangle, 1);
             triangle = NULL;
             break;
         case _ASTL_END_FACET: break;

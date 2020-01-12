@@ -7,6 +7,6 @@ cd %VSBLD%
 cmake ^
 -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" ^
 -DCMAKE_BUILD_TYPE=Debug ^
--G "Visual Studio 14 2015 Win64" ..
+-G "Visual Studio 15 2017 Win64" ..
 @echo off
 cd ..

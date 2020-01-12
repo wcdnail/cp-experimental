@@ -38,7 +38,7 @@ noError:
 void sceneFree(PGScene scene)
 {
     if (scene) {
-        g_list_foreach(scene->meshes, meshFree, NULL);
+        g_list_foreach(scene->meshes, (GFunc)meshFree, NULL);
         g_list_free(scene->meshes);
         scene->meshes = NULL;
         g_free(scene);
@@ -181,7 +181,7 @@ gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
         }
         glEnd();
         if (currentScene->meshes) {
-            g_list_foreach(currentScene->meshes, meshRender, NULL);
+            g_list_foreach(currentScene->meshes, (GFunc)meshRender, NULL);
         }
     }
     glFlush();

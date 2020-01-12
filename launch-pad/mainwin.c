@@ -154,7 +154,7 @@ static void pan_OnPositionNotify(GtkPaned *ctl, GParamSpec *pspec, gpointer user
     gboolean rootPan = ctl == win->panRoot;
     gint          cx = 0;
     gint          cy = 0;
-    gdk_window_get_geometry(gtk_widget_get_window(GTK_WINDOW(win)), NULL, NULL, &cx, &cy);
+    gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(win)), NULL, NULL, &cx, &cy);
     if (rootPan) {
         gtk_paned_set_position(win->panRoot, cy - appSettings()->logPanelCy);
     }
