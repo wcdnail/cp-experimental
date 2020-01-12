@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <epoxy/gl.h>
-#include "gmesh.h"
-#include "glog-box.h"
+#include "mesh.h"
+#include "logbox.h"
 
 PGMesh meshNew(const gchar *name)
 {

@@ -1,8 +1,8 @@
 #include <gtk/gtk.h>
 #include <epoxy/gl.h>
-#include "gmodel-view.h"
-#include "glog-box.h"
-#include "gfile-stl.h"
+#include "mainview.h"
+#include "logbox.h"
+#include "loadstl.h"
 
 static PGScene currentScene = NULL;
 

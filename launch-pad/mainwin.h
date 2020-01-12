@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glaunch-pad.h"
+#include "app.h"
 
 #define GMAIN_WIN_TYPE (gmain_win_get_type())
 

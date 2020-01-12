@@ -1,8 +1,7 @@
 #include <gtk/gtk.h>
 #include "appconfig.h"
-#include "glaunch-pad.h"
-#include "dbg-trace.h"
-#include "glog-box.h"
+#include "logbox.h"
+#include "app.h"
 #include <glib-object.h>
 #include <json-glib/json-glib.h>
 #include <json-glib/json-gobject.h>

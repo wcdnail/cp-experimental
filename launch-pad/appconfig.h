@@ -1,7 +1,7 @@
 #pragma once
 
-#include "grect.h"
-#include "gmain-win.h"
+#include "mainwin.h"
+#include "misc.h"
 
 enum _AppSettingsFields {
     PROP_APPSETTING_0,

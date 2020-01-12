@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include "glaunch-pad.h"
+#include "app.h"
 
 int main(int argc, char *argv[])
 {

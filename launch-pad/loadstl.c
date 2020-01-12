@@ -1,8 +1,8 @@
 #include <gtk/gtk.h>
 #include <epoxy/gl.h>
-#include "gfile-stl.h"
+#include "loadstl.h"
 #include "filemanip.h"
-#include "glog-box.h"
+#include "logbox.h"
 
 PGMesh stlLoadFile(const gchar *pathname) 
 {

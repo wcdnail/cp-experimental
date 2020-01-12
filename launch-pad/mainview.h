@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gmesh.h"
-#include "gmain-win.h"
+#include "mesh.h"
+#include "mainwin.h"
 
 struct _GScene
 {

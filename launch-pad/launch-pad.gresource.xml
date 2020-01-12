@@ -3,8 +3,6 @@
   <gresource prefix="/wcd/launchpad">
     <file preprocess="xml-stripblanks">launch-pad.ui</file>
     <file preprocess="xml-stripblanks">launch-pad-menu.ui</file>
-    <file alias="def-shader-fragment">glp-fragment.glsl</file>
-    <file alias="def-shader-vertex">glp-vertex.glsl</file>
     <file alias="icon-main">launch-pad.ico</file>
     <file alias="icon-splash">sm-star.png</file>
     <file alias="model-dummy">cube-plain.stl</file>

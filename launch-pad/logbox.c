@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include "glog-box.h"
+#include "logbox.h"
 
 static      GtkTextView *mainLogBox = NULL;
 static GtkTextBuffer *mainLogBuffer = NULL;

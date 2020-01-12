@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
-#include "glaunch-pad.h"
-#include "gmain-win.h"
+#include "app.h"
+#include "mainwin.h"
 #include "appconfig.h"
 
 //---------------------------------------------------------------------------------------------------------------------

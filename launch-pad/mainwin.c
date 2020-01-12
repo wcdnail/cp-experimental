@@ -1,9 +1,8 @@
 #include <gtk/gtk.h>
-#include "gmain-win.h"
+#include "mainwin.h"
+#include "mainview.h"
 #include "appconfig.h"
-#include "dbg-trace.h"
-#include "glog-box.h"
-#include "gmodel-view.h"
+#include "logbox.h"
 
 //---------------------------------------------------------------------------------------------------------------------
 // GTK Class 

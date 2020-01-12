@@ -14,7 +14,12 @@
 			"filemanip.h": "c",
 			"gfile-stl.h": "c",
 			"gl.h": "c",
-			"glog-box.h": "c"
+			"glog-box.h": "c",
+			"loadstl.h": "c",
+			"mesh.h": "c",
+			"logbox.h": "c",
+			"dbg-trace.h": "c",
+			"json-glib.h": "c"
 		}
 	}
 }

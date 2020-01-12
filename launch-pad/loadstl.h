@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gmesh.h"
+#include "mesh.h"
 
 PGMesh stlLoadFile(const gchar *pathname);
 PGMesh stlLoadResource(const gchar *pathname);

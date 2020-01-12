@@ -39,8 +39,6 @@ set(RESOURCES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ico
     ${CMAKE_CURRENT_SOURCE_DIR}/cube-plain.stl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glp-fragment.glsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glp-vertex.glsl
 )
 add_custom_command(
     OUTPUT "${RESOURCES_PN}"
