@@ -39,7 +39,7 @@ PGMesh meshNew(const gchar *name)
     }
     tempMesh->name = g_string_new(name);
     tempMesh->description = NULL;
-    tempMesh->color = 0xff000000;
+    tempMesh->color = 0xffaf7f7f;
     tempMesh->triangles = NULL;
     if (!tempMesh->name) {
         errorTitle = "name allocation";
@@ -73,9 +73,9 @@ void meshFree(PGMesh mesh)
     }
 }
 
-static void meshPutVertexTriangle(PGTriangle triangle)
+static inline void meshPutVertexTriangle(PGTriangle triangle)
 {
-    //glNormal3d(triangle->normal.x, triangle->normal.y, triangle->normal.z);
+    glNormal3d(triangle->normal.x, triangle->normal.y, triangle->normal.z);
     for (guint i = 0; i < 3; i++) {
         glVertex3d(triangle->vertex[i].x, triangle->vertex[i].y, triangle->vertex[i].z);
     }
@@ -83,9 +83,7 @@ static void meshPutVertexTriangle(PGTriangle triangle)
 
 static void meshPutTriangles(PGMesh mesh)
 {
-    //guint32 wirecolor = 0xff000000;
-    //glColor4bv((const GLbyte*)&wirecolor);
-    glColor4bv((const GLbyte*)&mesh->color);
+    glColor4ubv((const GLubyte*)&mesh->color);
     glBegin(GL_TRIANGLES);
     for (guint i = 0; i < mesh->triangles->len; i++) {
         PGTriangle trianle = &g_array_index(mesh->triangles, GTriangle, i);
@@ -102,6 +100,5 @@ void meshRender(PGMesh mesh)
     }
     glPushMatrix();
     meshPutTriangles(mesh);
-    //meshPutLines(mesh);
     glPopMatrix();
 }
