@@ -125,6 +125,9 @@ add_executable(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
+if (MSVC)
+    set_target_properties(${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=${VCPKG_BUILDCONF_DIR}/bin")
+endif()
 
 message("# -----------------------------------------------------------------")
 message("VCPKG toolchain file : ${CMAKE_TOOLCHAIN_FILE}")

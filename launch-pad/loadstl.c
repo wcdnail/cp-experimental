@@ -12,7 +12,7 @@ static PGMesh stlLoadBin(const gchar *pathname, GInputStream *istm);
 
 PGMesh stlLoadFile(const gchar *pathname) 
 {
-    return NULL;
+    return (NULL);
 }
 
 PGMesh stlLoadResource(const gchar *pathname)
@@ -183,7 +183,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
                 goto parserError;
             }
             triangle = &triangleBuf;
-            if (arg && !vertexFromString(&triangle->normal, arg)) {
+            if (arg && !vertexFromString(&triangle->normal, arg, 0, 1, 2)) {
                 parseErrorMsg = "parsing normal error";
                 goto parserError;
             }
@@ -205,7 +205,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
                 parseErrorMsg = "vertex count more than 3";
                 goto parserError;
             }
-            if (!vertexFromString(&triangle->vertex[vindex], arg)) {
+            if (!vertexFromString(&triangle->vertex[vindex], arg, 0, 1, 2)) {
                 parseErrorMsg = "parsing vertex error";
                 goto parserError;
             }

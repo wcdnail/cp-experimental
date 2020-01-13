@@ -1,7 +1,6 @@
 @echo off
 
 set VSBLD=build
-set VCPKG_ROOT=C:/Dev/VCPkg
 
 mkdir %VSBLD%
 cd %VSBLD%

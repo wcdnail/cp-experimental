@@ -3,15 +3,15 @@
 #include "mesh.h"
 #include "logbox.h"
 
-gboolean vertexFromString(PGVertex vertex, const gchar *str)
+gboolean vertexFromString(PGVertex vertex, const gchar *str, int xindex, int yindex, int zindex)
 {
     gchar **varg = g_strsplit(str, " ", 3);
     if (!varg) {
         return (FALSE);
     }
-    vertex->x = g_ascii_strtod(varg[0], NULL);
-    vertex->y = g_ascii_strtod(varg[1], NULL);
-    vertex->z = g_ascii_strtod(varg[2], NULL);
+    vertex->x = g_ascii_strtod(varg[xindex], NULL);
+    vertex->y = g_ascii_strtod(varg[yindex], NULL);
+    vertex->z = g_ascii_strtod(varg[zindex], NULL);
     g_strfreev(varg);
     return (TRUE);
 #ifdef _DEBUG_MESH_DATA
