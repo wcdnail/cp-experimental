@@ -1,4 +1,4 @@
-solid OpenSCAD_Model
+solid Dummy-Scene
   facet normal -1 0 0
     outer loop
       vertex 0.4 0.4 0

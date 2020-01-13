@@ -6,7 +6,7 @@ option(USE_GSCHEMA "Compile & install GSettings schema" ON)
 
 if (MSVC)
     set(VCPKGDIR "$ENV{VCPKG_ROOT}")
-    set(GLIB_TOOLS_PATH "${VCPKGDIR}/installed/x64-windows/tools/glib")
+    set(GLIB_TOOLS_PATH "${VCPKGDIR}/installed/x64-windows/tools/glib/")
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(VCPKG_BUILDCONF_DIR "${VCPKGDIR}/installed/x64-windows/debug")
     else()
@@ -71,11 +71,11 @@ set(RESOURCES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ico
-    ${CMAKE_CURRENT_SOURCE_DIR}/cube-plain.stl
+    ${CMAKE_CURRENT_SOURCE_DIR}/scene.stl
 )
 add_custom_command(
     OUTPUT "${RESOURCES_PN}"
-    COMMAND ${GLIB_TOOLS_PATH}/glib-compile-resources
+    COMMAND ${GLIB_TOOLS_PATH}glib-compile-resources
     ARGS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
          --target=${RESOURCES_PN} 
          --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} 
@@ -89,7 +89,7 @@ if (USE_GSCHEMA)
     set(SCHEMA_PN "${SCHEMA_BD}/${SCHEMA_CT}")
     add_custom_command(
         OUTPUT "${SCHEMA_PN}"
-        COMMAND ${GLIB_TOOLS_PATH}/glib-compile-schemas
+        COMMAND ${GLIB_TOOLS_PATH}glib-compile-schemas
         ARGS --strict
              --targetdir=${SCHEMA_BD}/
              ${CMAKE_CURRENT_SOURCE_DIR}/.

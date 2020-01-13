@@ -64,7 +64,11 @@ static void model_view_init_startup_scene(void)
 
 void modelView_Init(GtkGLArea *ctl)
 {
-    GError *error = NULL;
+    GError            *error = NULL;
+    GLfloat  light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat  light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
     gtk_gl_area_make_current(ctl);
     if ((error = gtk_gl_area_get_error(ctl)) != NULL) {
         lgTrace(LG_ERROR, "MODELVIEW init ERROR: [%d] %s\n", error->code, error->message);
@@ -76,6 +80,12 @@ void modelView_Init(GtkGLArea *ctl)
     glClearColor(1, 1, 1, 1);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glEnable(GL_LIGHT0);
     model_view_init_startup_scene();
 }
 
@@ -181,7 +191,9 @@ gboolean modelView_OnRender(GtkGLArea *ctl, GdkGLContext *context)
         }
         glEnd();
         if (currentScene->meshes) {
+            glEnable(GL_LIGHTING);
             g_list_foreach(currentScene->meshes, (GFunc)meshRender, NULL);
+            glDisable(GL_LIGHTING);
         }
     }
     glFlush();
