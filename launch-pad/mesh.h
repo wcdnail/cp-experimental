@@ -28,7 +28,7 @@ struct _GMesh
 typedef struct _GMesh   GMesh;
 typedef struct _GMesh* PGMesh;
 
-gboolean vertexFromString(PGVertex vertex, const gchar *str, int xindex, int yindex, int zindex);
+gboolean vertexFromString(PGVertex vertex, const gchar *str, gsize len);
 PGMesh meshNew(const gchar *name);
 void meshFree(PGMesh mesh);
 void meshRender(PGMesh mesh);

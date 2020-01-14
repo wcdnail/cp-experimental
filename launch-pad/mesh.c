@@ -3,29 +3,22 @@
 #include "mesh.h"
 #include "logbox.h"
 
-gboolean vertexFromString(PGVertex vertex, const gchar *str, int xindex, int yindex, int zindex)
+gboolean vertexFromString(PGVertex vertex, const gchar *str, gsize len)
 {
-    gchar **varg = g_strsplit(str, " ", 3);
-    if (!varg) {
+    gchar          *vstr;
+    gdouble  *vertexData;
+    if (!vertex || !str) {
         return (FALSE);
     }
-    vertex->x = g_ascii_strtod(varg[xindex], NULL);
-    vertex->y = g_ascii_strtod(varg[yindex], NULL);
-    vertex->z = g_ascii_strtod(varg[zindex], NULL);
-    g_strfreev(varg);
+    vertexData = &vertex->x;
+    vstr = (gchar*)str;
+    for (gint i = 0; i < 3; i++) {
+        if (!(*vstr)) {
+            return (FALSE);
+        }
+        vertexData[i] = g_ascii_strtod(vstr, &vstr);
+    }
     return (TRUE);
-#ifdef _DEBUG_MESH_DATA
-    lgTrace(LG_MSG, "TRI:\n"
-        "    A: [%f %f %f]\n"
-        "    B: [%f %f %f]\n"
-        "    C: [%f %f %f]\n"
-        "    N: [%f %f %f]\n",
-        triangle->vertex[0].x, triangle->vertex[0].y, triangle->vertex[0].z,
-        triangle->vertex[1].x, triangle->vertex[1].y, triangle->vertex[1].z,
-        triangle->vertex[2].x, triangle->vertex[2].y, triangle->vertex[2].z,
-        triangle->normal.x, triangle->normal.y, triangle->normal.z
-    );
-#endif
 }
 
 PGMesh meshNew(const gchar *name)
@@ -71,6 +64,20 @@ void meshFree(PGMesh mesh)
         }
         g_free(mesh);
     }
+}
+
+void triangleDump(PGTriangle triangle)
+{
+    lgTrace(LG_MSG, "TRI:\n"
+        "    A: [%f %f %f]\n"
+        "    B: [%f %f %f]\n"
+        "    C: [%f %f %f]\n"
+        "    N: [%f %f %f]\n",
+        triangle->vertex[0].x, triangle->vertex[0].y, triangle->vertex[0].z,
+        triangle->vertex[1].x, triangle->vertex[1].y, triangle->vertex[1].z,
+        triangle->vertex[2].x, triangle->vertex[2].y, triangle->vertex[2].z,
+        triangle->normal.x, triangle->normal.y, triangle->normal.z
+    );
 }
 
 static inline void meshPutVertexTriangle(PGTriangle triangle)

@@ -73,30 +73,35 @@ static const gchar* astl_parser_state_str(gint state)
     return (NULL);
 }
 
-static void skipTailSpecials(gchar *arg, gssize len)
+static gsize skipTailSpecials(gchar *arg, gssize len)
 {
     gchar *tail = arg + len;
     while ((tail > arg) && (*tail < ' ')) {
         --tail;
     }
     *(++tail) = 0;
+    return ((gsize)tail - (gsize)arg);
 }
 
-static gboolean astlCheckToken(gchar *token, gssize len, const gchar *lexeme, gsize lexsize, gint resState, gint *state, gchar **arg)
+static gboolean astlCheckToken(gchar *token, gssize len, const gchar *lexeme, gsize lexsize, gint resState, gint *state, gchar **arg, gsize *arglen)
 {
     if (0 != g_ascii_strncasecmp(token, lexeme, lexsize)) {
         return (FALSE);
     }
     if (arg) {
         gsize skipsize = lexsize + 1;
+        gsize     argl = 0;
         *arg = token + skipsize;
-        skipTailSpecials(*arg, len - skipsize);
+        argl = skipTailSpecials(*arg, len - skipsize);
+        if (arglen) {
+            (*arglen) = argl;
+        }
     }
     (*state) = resState;
     return (TRUE);
 }
 
-static gint astlGetParserState(gchar *line, gssize len, gchar **arg)
+static gint astlGetParserState(gchar *line, gssize len, gchar **arg, gsize *arglen)
 {
     gint  state = _ASTL_INVALID;
     char *token = NULL;
@@ -109,34 +114,34 @@ static gint astlGetParserState(gchar *line, gssize len, gchar **arg)
     }
     switch(g_ascii_tolower(*token)) {
     case 's':
-        astlCheckToken(token, len, "solid", 5, _ASTL_BEG_FILE, &state, arg);
+        astlCheckToken(token, len, "solid", 5, _ASTL_BEG_FILE, &state, arg, arglen);
         break;
     case 'e':
-        if (astlCheckToken(token, len, "end", 3, _ASTL_INVALID, &state, NULL)) {
-            if (astlCheckToken(token + 3, len - 3, "facet", 5, _ASTL_END_FACET, &state, NULL)) {
+        if (astlCheckToken(token, len, "end", 3, _ASTL_INVALID, &state, NULL, NULL)) {
+            if (astlCheckToken(token + 3, len - 3, "facet", 5, _ASTL_END_FACET, &state, NULL, NULL)) {
                 return state;
             }
-            else if (astlCheckToken(token + 3, len - 3, "loop", 4, _ASTL_END_OUTER_LOOP, &state, NULL)) {
+            else if (astlCheckToken(token + 3, len - 3, "loop", 4, _ASTL_END_OUTER_LOOP, &state, NULL, NULL)) {
                 return state;
             }
-            else if (astlCheckToken(token + 3, len - 3, "solid", 5, _ASTL_END_FILE, &state, NULL)) {
+            else if (astlCheckToken(token + 3, len - 3, "solid", 5, _ASTL_END_FILE, &state, NULL, NULL)) {
                 return state;
             }
         }
         break;
     case 'f':
-        if (astlCheckToken(token, len, "facet", 5, _ASTL_BEG_FACET, &state, NULL)) {
-            astlCheckToken(token + 6, len - 6, "normal", 6, _ASTL_BEG_FACET, &state, arg);
+        if (astlCheckToken(token, len, "facet", 5, _ASTL_BEG_FACET, &state, NULL, NULL)) {
+            astlCheckToken(token + 6, len - 6, "normal", 6, _ASTL_BEG_FACET, &state, arg, arglen);
             return state;
         }
         break;
     case 'o':
-        if (astlCheckToken(token, len, "outer loop", 10, _ASTL_BEG_OUTER_LOOP, &state, NULL)) {
+        if (astlCheckToken(token, len, "outer loop", 10, _ASTL_BEG_OUTER_LOOP, &state, NULL, NULL)) {
             return state;
         }
         break;
     case 'v':
-        if (astlCheckToken(token, len, "vertex", 6, _ASTL_VERTEX, &state, arg)) {
+        if (astlCheckToken(token, len, "vertex", 6, _ASTL_VERTEX, &state, arg, arglen)) {
             return state;
         }
         break;
@@ -157,7 +162,6 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
     gint                 state = _ASTL_INVALID;
     gint             prevState = _ASTL_BEG_FILE;
     guint               vindex = 0;
-    gchar                 *arg = NULL;
     GArray          *triangles = NULL;
     PGTriangle        triangle = NULL;
     GTriangle      triangleBuf = {0};
@@ -190,7 +194,9 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
         goto onError;
     }
     do {
-        state = astlGetParserState(line, readed, &arg);
+        gchar   *arg = NULL;
+        gsize arglen = 0;
+        state = astlGetParserState(line, readed, &arg, &arglen);
         switch (state) {
         case _ASTL_BEG_FILE: {
             result->description = g_string_new(arg);
@@ -202,7 +208,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
                 goto parserError;
             }
             triangle = &triangleBuf;
-            if (arg && !vertexFromString(&triangle->normal, arg, 0, 1, 2)) {
+            if (arg && !vertexFromString(&triangle->normal, arg, arglen)) {
                 parseErrorMsg = "parsing normal error";
                 goto parserError;
             }
@@ -224,7 +230,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
                 parseErrorMsg = "vertex count more than 3";
                 goto parserError;
             }
-            if (!vertexFromString(&triangle->vertex[vindex], arg, 0, 1, 2)) {
+            if (!vertexFromString(&triangle->vertex[vindex], arg, arglen)) {
                 parseErrorMsg = "parsing vertex error";
                 goto parserError;
             }
