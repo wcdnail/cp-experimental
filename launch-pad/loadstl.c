@@ -73,9 +73,33 @@ static const gchar* astl_parser_state_str(gint state)
     return (NULL);
 }
 
-static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **arg)
+static void skipTailSpecials(gchar *arg, gssize len)
 {
-    const char *token;
+    gchar *tail = arg + len;
+    while ((tail > arg) && (*tail < ' ')) {
+        --tail;
+    }
+    *(++tail) = 0;
+}
+
+static gboolean astlCheckToken(gchar *token, gssize len, const gchar *lexeme, gsize lexsize, gint resState, gint *state, gchar **arg)
+{
+    if (0 != g_ascii_strncasecmp(token, lexeme, lexsize)) {
+        return (FALSE);
+    }
+    if (arg) {
+        gsize skipsize = lexsize + 1;
+        *arg = token + skipsize;
+        skipTailSpecials(*arg, len - skipsize);
+    }
+    (*state) = resState;
+    return (TRUE);
+}
+
+static gint astlGetParserState(gchar *line, gssize len, gchar **arg)
+{
+    gint  state = _ASTL_INVALID;
+    char *token = NULL;
     if (len < 3) {
         return _ASTL_SKIP_LINE;
     }
@@ -85,44 +109,39 @@ static gint astl_get_parser_state(const gchar *line, gssize len, const gchar **a
     }
     switch(g_ascii_tolower(*token)) {
     case 's':
-        if (0 == g_ascii_strncasecmp(token, "solid", 5)) {
-            (*arg) = token + 6;
-            return _ASTL_BEG_FILE;
-        }
+        astlCheckToken(token, len, "solid", 5, _ASTL_BEG_FILE, &state, arg);
         break;
     case 'e':
-        if (0 == g_ascii_strncasecmp(token, "end", 3)) {
-            if (0 == g_ascii_strncasecmp(token + 3, "facet", 5)) {
-                return _ASTL_END_FACET;
+        if (astlCheckToken(token, len, "end", 3, _ASTL_INVALID, &state, NULL)) {
+            if (astlCheckToken(token + 3, len - 3, "facet", 5, _ASTL_END_FACET, &state, NULL)) {
+                return state;
             }
-            else if (0 == g_ascii_strncasecmp(token + 3, "loop", 4)) {
-                return _ASTL_END_OUTER_LOOP;
+            else if (astlCheckToken(token + 3, len - 3, "loop", 4, _ASTL_END_OUTER_LOOP, &state, NULL)) {
+                return state;
             }
-            else if (0 == g_ascii_strncasecmp(token + 3, "solid", 5)) {
-                return _ASTL_END_FILE;
+            else if (astlCheckToken(token + 3, len - 3, "solid", 5, _ASTL_END_FILE, &state, NULL)) {
+                return state;
             }
         }
         break;
     case 'f':
-        if (0 == g_ascii_strncasecmp(token, "facet", 5)) {
-            if (0 == g_ascii_strncasecmp(token + 6, "normal", 6)) {
-                (*arg) = token + 13;
-            }
-            return _ASTL_BEG_FACET;
+        if (astlCheckToken(token, len, "facet", 5, _ASTL_BEG_FACET, &state, NULL)) {
+            astlCheckToken(token + 6, len - 6, "normal", 6, _ASTL_BEG_FACET, &state, arg);
+            return state;
         }
+        break;
     case 'o':
-        if (0 == g_ascii_strncasecmp(token, "outer loop", 10)) {
-            return _ASTL_BEG_OUTER_LOOP;
+        if (astlCheckToken(token, len, "outer loop", 10, _ASTL_BEG_OUTER_LOOP, &state, NULL)) {
+            return state;
         }
         break;
     case 'v':
-        if (0 == g_ascii_strncasecmp(token, "vertex", 6)) {
-            (*arg) = token + 7;
-            return _ASTL_VERTEX;
+        if (astlCheckToken(token, len, "vertex", 6, _ASTL_VERTEX, &state, arg)) {
+            return state;
         }
         break;
     }
-    return _ASTL_INVALID;
+    return state;
 }
 
 static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm) 
@@ -138,7 +157,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
     gint                 state = _ASTL_INVALID;
     gint             prevState = _ASTL_BEG_FILE;
     guint               vindex = 0;
-    const gchar           *arg = NULL;
+    gchar                 *arg = NULL;
     GArray          *triangles = NULL;
     PGTriangle        triangle = NULL;
     GTriangle      triangleBuf = {0};
@@ -171,7 +190,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
         goto onError;
     }
     do {
-        state = astl_get_parser_state(line, readed, &arg);
+        state = astlGetParserState(line, readed, &arg);
         switch (state) {
         case _ASTL_BEG_FILE: {
             result->description = g_string_new(arg);
