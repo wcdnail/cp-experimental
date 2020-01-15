@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.0)
 
 project(cp-experimental)
 
+# Default to Debug build
+if(NOT CMAKE_BUILD_TYPE)
+  message(STATUS "CMAKE_BUILD_TYPE not specified.  Defaulting to 'Release'")
+  message(STATUS "Usage: cmake -DCMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo|MinSizeRel] .")
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 set(REL_DEFS          "-DNDEBUG")
 set(DBG_DEFS          "-D_DEBUG")
 set(MSVC_CFLAGS       "/wd4047")
@@ -32,8 +39,8 @@ if (WIN32)
     endif()
 endif()
 
-add_subdirectory(launch-pad-gtk)
+add_subdirectory(launch-pad-qt)
 
 if (MSVC)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT launch-pad-gtk)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT launch-pad-qt)
 endif()
