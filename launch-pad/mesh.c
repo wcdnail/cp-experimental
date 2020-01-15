@@ -3,7 +3,7 @@
 #include "mesh.h"
 #include "logbox.h"
 
-gboolean vertexFromString(PGVertex vertex, const gchar *str, gsize len)
+gboolean vertexFromString(PGVertex vertex, gchar *str, gsize len)
 {
     gchar          *vstr;
     gdouble  *vertexData;
@@ -11,7 +11,7 @@ gboolean vertexFromString(PGVertex vertex, const gchar *str, gsize len)
         return (FALSE);
     }
     vertexData = &vertex->x;
-    vstr = (gchar*)str;
+    vstr = str;
     for (gint i = 0; i < 3; i++) {
         if (!(*vstr)) {
             return (FALSE);
@@ -106,6 +106,7 @@ void meshRender(PGMesh mesh)
         return ;
     }
     glPushMatrix();
+    glRotated(-90, 1, 0, 0);
     meshPutTriangles(mesh);
     glPopMatrix();
 }

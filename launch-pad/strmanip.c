@@ -3,7 +3,7 @@
 
 const gchar* strFirstNotSpace(const gchar *start, gsize *len)
 {
-    gchar *p = start;
+    const gchar *p = start;
     while (isspace(*p) && (*len) > 1) {
         ++p;
         --(*len);
@@ -13,7 +13,7 @@ const gchar* strFirstNotSpace(const gchar *start, gsize *len)
 
 const gchar* strFirstSpace(const gchar *start, gsize *len)
 {
-    gchar *p = start;
+    const gchar *p = start;
     while (!isspace(*p) && (*len) > 1) {
         ++p;
         --(*len);
