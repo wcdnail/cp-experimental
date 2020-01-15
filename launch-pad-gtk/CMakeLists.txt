@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(launch-pad)
+project(launch-pad-gtk)
 
 option(USE_GSCHEMA "Compile & install GSettings schema" ON)
 

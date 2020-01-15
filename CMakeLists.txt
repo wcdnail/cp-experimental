@@ -32,8 +32,8 @@ if (WIN32)
     endif()
 endif()
 
-add_subdirectory(launch-pad)
+add_subdirectory(launch-pad-gtk)
 
 if (MSVC)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT launch-pad)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT launch-pad-gtk)
 endif()
