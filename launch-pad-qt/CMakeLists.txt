@@ -50,6 +50,11 @@ file(GLOB_RECURSE QRC_SRCS *.qrc)
 qt5_wrap_ui(UI_WRAP ${UI_SRCS})
 qt5_wrap_cpp(MOC_SRCS ${H_SRCS})
 
+if (WIN32)
+    set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
+    set(OS_SPEC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../winres.rc)
+endif()
+
 list(APPEND COMMON_SOURCES 
     ${CXX_SRCS}
     ${C_SRCS}
@@ -57,11 +62,18 @@ list(APPEND COMMON_SOURCES
     ${QRC_SRCS}
     ${UI_WRAP}
     ${MOC_SRCS}
+    ${OS_SPEC_SRCS}
 )
-    
-add_executable(${PROJECT_NAME}
-    ${COMMON_SOURCES}
-)
+
+add_executable(${PROJECT_NAME} ${COMMON_SOURCES})
+
+if (WIN32)
+    if (GNU)
+        add_link_options("-Wl,--subsystem,windows")
+    elseif (MSVC)
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-subsystem:windows -ENTRY:mainCRTStartup")
+    endif()
+endif()
 
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 

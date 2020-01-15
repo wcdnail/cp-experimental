@@ -1,0 +1,42 @@
+# if defined(UNDER_CE)
+#  include <winbase.h>
+# else
+#  include <winver.h>
+# endif
+
+#include "winuser.h"
+
+#if 0
+1 RT_MANIFEST "resources/winmanifest.xml"
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+	FILEVERSION 0,0,0,0
+	PRODUCTVERSION 0,0,0,0
+	FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+	FILEFLAGS VS_FF_DEBUG
+#else
+	FILEFLAGS 0x0L
+#endif
+	FILEOS VOS__WINDOWS32
+	FILETYPE VFT_DLL
+	FILESUBTYPE 0x0L
+	BEGIN
+		BLOCK "StringFileInfo"
+		BEGIN
+			BLOCK "0409"
+			BEGIN
+				VALUE "CompanyName", "\0"
+				VALUE "FileDescription", "LaunchPAD\0"
+				VALUE "FileVersion", "devbuild\0"
+				VALUE "LegalCopyright", "Copyright (C) 1992-2020 IDEV\0"
+				VALUE "OriginalFilename", "launch-pad.exe\0"
+				VALUE "ProductName", "LaunchPAD\0"
+			END
+		END
+	END
+/* End of Version info */
+
+IDI_ICON1   ICON    DISCARDABLE "pixmaps/launch-pad.ico"
+

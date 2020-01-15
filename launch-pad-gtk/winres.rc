@@ -1,4 +1,4 @@
-PIRAMYD_SPHERE_CUBE ICON "launch-pad.ico"
+PIRAMYD_SPHERE_CUBE ICON "..\\pixmaps\\launch-pad.ico"
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION 1, 0, 0, 1

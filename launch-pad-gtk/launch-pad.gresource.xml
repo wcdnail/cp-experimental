@@ -3,8 +3,8 @@
   <gresource prefix="/wcd/launchpad">
     <file preprocess="xml-stripblanks">launch-pad.ui</file>
     <file preprocess="xml-stripblanks">launch-pad-menu.ui</file>
-    <file alias="icon-main">launch-pad.ico</file>
-    <file alias="icon-splash">sm-star.png</file>
+    <file alias="icon-main">../pixmaps/launch-pad.ico</file>
+    <file alias="icon-splash">../pixmaps/sm-star.png</file>
     <file alias="model-dummy">scene.stl</file>
   </gresource>
 </gresources>
