@@ -66,16 +66,15 @@ list(APPEND COMMON_SOURCES
 )
 
 add_executable(${PROJECT_NAME} ${COMMON_SOURCES})
+target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 
 if (WIN32)
-    if (GNU)
+    if(MSVC)
+        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS -ENTRY:mainCRTStartup")
+    else()
         add_link_options("-Wl,--subsystem,windows")
-    elseif (MSVC)
-        set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-subsystem:windows -ENTRY:mainCRTStartup")
     endif()
 endif()
-
-target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 
 message(STATUS "# -----------------------------------------------------------------")
 message(STATUS "Project              : [${CMAKE_BUILD_TYPE}] ${PROJECT_NAME}")
