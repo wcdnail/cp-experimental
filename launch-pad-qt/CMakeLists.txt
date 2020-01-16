@@ -63,13 +63,17 @@ if (WIN32)
     set(OS_SPEC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/winres.rc)
 endif()
 
+source_group("" FILES ${CXX_SRCS} ${C_SRCS} ${H_SRCS})
 source_group("moc" FILES ${MOC_SRCS})
-source_group("ui" FILES ${UI_SRCS})
+source_group("ui" FILES ${UI_SRCS} ${UI_WRAP})
 source_group("res" FILES ${QRC_SRCS})
 source_group("win32" FILES ${OS_SPEC_SRCS})
 source_group("pch" FILES 
     stdafx.h
     stdafx.cpp
+)
+source_group("misc" FILES 
+    CMakeLists.txt
 )
 
 list(APPEND COMMON_SOURCES 
