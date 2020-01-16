@@ -53,6 +53,7 @@ file(GLOB_RECURSE QRC_SRCS *.qrc)
 file(GLOB_RECURSE MOC_H_SRCS 
     app.h
     winmain.h
+    logbox.h
 )
 
 QT5_WRAP_CPP(MOC_SRCS ${MOC_H_SRCS})

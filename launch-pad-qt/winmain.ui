@@ -134,12 +134,15 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTextEdit" name="logBox">
+      <widget class="LogBox" name="logBox">
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Plain</enum>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -184,6 +187,13 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="9"/>
+ <customwidgets>
+  <customwidget>
+   <class>LogBox</class>
+   <extends>QPlainTextEdit</extends>
+   <header>logbox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="qres.qrc"/>
  </resources>
