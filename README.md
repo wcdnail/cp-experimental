@@ -1,4 +1,4 @@
-# GTK+ 3 experimental
+# CP experimental
 ## Windows DevEnv setup (GTK:VCPKG)
 ```
 git clone https://github.com/Microsoft/vcpkg
