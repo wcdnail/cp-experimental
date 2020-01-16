@@ -1,4 +1,7 @@
-cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+
+include("../cmake/pch.cmake")
+include("../cmake/misc.cmake")
 
 project(launch-pad-qt)
 
@@ -47,13 +50,27 @@ file(GLOB_RECURSE H_SRCS *.h)
 file(GLOB_RECURSE UI_SRCS *.ui)
 file(GLOB_RECURSE QRC_SRCS *.qrc)
 
-qt5_wrap_ui(UI_WRAP ${UI_SRCS})
-qt5_wrap_cpp(MOC_SRCS ${H_SRCS})
+file(GLOB_RECURSE MOC_H_SRCS 
+    app.h
+    winmain.h
+)
+
+QT5_WRAP_CPP(MOC_SRCS ${MOC_H_SRCS})
+QT5_WRAP_UI(UI_WRAP ${UI_SRCS})
 
 if (WIN32)
     set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
-    set(OS_SPEC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../winres.rc)
+    set(OS_SPEC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/winres.rc)
 endif()
+
+source_group("moc" FILES ${MOC_SRCS})
+source_group("ui" FILES ${UI_SRCS})
+source_group("res" FILES ${QRC_SRCS})
+source_group("win32" FILES ${OS_SPEC_SRCS})
+source_group("pch" FILES 
+    stdafx.h
+    stdafx.cpp
+)
 
 list(APPEND COMMON_SOURCES 
     ${CXX_SRCS}
@@ -65,8 +82,18 @@ list(APPEND COMMON_SOURCES
     ${OS_SPEC_SRCS}
 )
 
+_PRE_ADD_PCH(SOURCES stdafx.h stdafx.cpp)
 add_executable(${PROJECT_NAME} ${COMMON_SOURCES})
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
+if (MSVC)
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+    set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+    foreach (MOC_FILE ${MOC_SRCS})
+        set_source_files_properties(${MOC_FILE} PROPERTIES COMPILE_FLAGS "/Y-")
+    endforeach()
+else()
+   _POST_ADD_PCH(stdafx.h stdafx.cpp)
+endif(MSVC)
 
 if (WIN32)
     if(MSVC)

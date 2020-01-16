@@ -18,9 +18,6 @@ vcpkg install glew:x64-windows
 vcpkg install fontconfig:x64-windows
 vcpkg install harfbuzz:x64-windows
 vcpkg install libzip:x64-windows
-vcpkg install bison:x64-windows
-vcpkg install flex:x64-windows
-vcpkg install pkg-config:x64-windows
 vcpkg install double-conversion:x64-windows
 vcpkg install eigen3:x64-windows
 vcpkg install libxml2:x64-windows

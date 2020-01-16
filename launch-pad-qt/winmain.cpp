@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "winmain.h"
 #include "app.h"
 #include "ui_winmain.h"
