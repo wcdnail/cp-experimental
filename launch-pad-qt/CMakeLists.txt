@@ -55,9 +55,8 @@ file(GLOB_RECURSE MOC_H_SRCS
     winmain.h
     logbox.h
 )
-
-QT5_WRAP_CPP(MOC_SRCS ${MOC_H_SRCS})
-QT5_WRAP_UI(UI_WRAP ${UI_SRCS})
+qt5_wrap_cpp(MOC_SRCS ${MOC_H_SRCS} OPTIONS "-bstdafx.h")
+qt5_wrap_ui(UI_WRAP ${UI_SRCS})
 
 if (WIN32)
     set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
@@ -93,9 +92,6 @@ target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
     set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-    foreach (MOC_FILE ${MOC_SRCS})
-        set_source_files_properties(${MOC_FILE} PROPERTIES COMPILE_FLAGS "/Y-")
-    endforeach()
 else()
    _POST_ADD_PCH(stdafx.h stdafx.cpp)
 endif(MSVC)
