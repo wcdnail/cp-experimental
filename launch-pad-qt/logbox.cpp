@@ -17,18 +17,17 @@ LogBox::~LogBox()
 
 void LogBox::onClearConsole()
 {
-    this->document()->clear();
+    document()->clear();
 }
 
 void LogBox::onSaveAs()
 {
-    const auto& text = this->document()->toPlainText();
+    const auto text = document()->toPlainText();
     const auto fileName = QFileDialog::getSaveFileName(this, "Save log box content");
     QFile file(fileName);
     if (file.open(QIODevice::ReadWrite)) {
         QTextStream stream(&file);
         stream << text;
         stream.flush();
-        //PRINTB("LogBox content saved to '%s'.", fileName.toStdString());
     }
 }

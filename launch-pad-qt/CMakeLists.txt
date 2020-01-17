@@ -34,6 +34,10 @@ list(APPEND ALL_LIBS
     Qt5::Network
 )
 
+if (("${Qt5_VERSION}" VERSION_EQUAL "5.4") OR ("${Qt5_VERSION}" VERSION_GREATER "5.4"))
+    add_definitions(-DUSE_QOPENGLWIDGET)
+endif()
+
 find_package(Boost 1.36 REQUIRED COMPONENTS ${BOOST_DIRECTLY_REQUIRED_LIBRARIES} QUIET)
 list(APPEND ALL_INC_DIRS ${Boost_INCLUDE_DIRS})
 list(APPEND ALL_LIBS ${Boost_LIBRARIES})
@@ -53,6 +57,7 @@ file(GLOB_RECURSE QRC_SRCS *.qrc)
 file(GLOB_RECURSE MOC_H_SRCS 
     app.h
     winmain.h
+    viewmain.h
     logbox.h
 )
 qt5_wrap_cpp(MOC_SRCS ${MOC_H_SRCS} OPTIONS "-bstdafx.h")
@@ -99,6 +104,7 @@ endif(MSVC)
 if (WIN32)
     if(MSVC)
         set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS -ENTRY:mainCRTStartup")
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_DEBUGGER_ENVIRONMENT "PATH=${VCPKG_BUILDCONF_DIR}/bin")
     else()
         add_link_options("-Wl,--subsystem,windows")
     endif()

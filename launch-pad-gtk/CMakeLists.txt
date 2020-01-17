@@ -5,15 +5,9 @@ project(launch-pad-gtk)
 option(USE_GSCHEMA "Compile & install GSettings schema" ON)
 
 if (MSVC)
-    set(VCPKGDIR "$ENV{VCPKG_ROOT}")
-    set(GLIB_TOOLS_PATH "${VCPKGDIR}/installed/x64-windows/tools/glib/")
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(VCPKG_BUILDCONF_DIR "${VCPKGDIR}/installed/x64-windows/debug")
-    else()
-        set(VCPKG_BUILDCONF_DIR "${VCPKGDIR}/installed/x64-windows")
-    endif()
+    set(GLIB_TOOLS_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/tools/glib/")
     list(APPEND ALL_INC_DIRS 
-        "${VCPKGDIR}/installed/x64-windows/include"
+        "$ENV{VCPKG_ROOT}/installed/x64-windows/include"
     )
     list(APPEND ALL_LIB_DIRS 
         "${VCPKG_BUILDCONF_DIR}/lib"
@@ -71,7 +65,7 @@ set(RESOURCES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ico
-    ${CMAKE_CURRENT_SOURCE_DIR}/scene.stl
+    ${CMAKE_CURRENT_SOURCE_DIR}/../resources/initial-scene.stl
 )
 add_custom_command(
     OUTPUT "${RESOURCES_PN}"

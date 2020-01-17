@@ -19,16 +19,21 @@
 #include <QTextStream>
 #include <QtGui/QIcon>
 #include <QtCore/QVariant>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QDockWidget>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QOpenGLWidget>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QPlainTextEdit>
+#include <QApplication>
+#include <QDockWidget>
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QOpenGLWidget>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QAction>
+#include <QPlainTextEdit>
+#ifdef USE_QOPENGLWIDGET
+#include <QOpenGLWidget>
+#else
+#include <QGLWidget>
+#endif
 
 #include <boost/exception/diagnostic_information.hpp>

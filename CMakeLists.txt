@@ -2,11 +2,27 @@ cmake_minimum_required(VERSION 3.0)
 
 project(cp-experimental)
 
-# Default to Debug build
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "CMAKE_BUILD_TYPE not specified.  Defaulting to 'Release'")
   message(STATUS "Usage: cmake -DCMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo|MinSizeRel] .")
   set(CMAKE_BUILD_TYPE Release)
+endif()
+
+if (MSVC)
+    set(VCPKG_ROOT_DIR "$ENV{VCPKG_ROOT}")
+    if ("${VCPKG_ROOT_DIR}" STREQUAL "")
+        message(FATAL_ERROR "VCPKG is not configured! (VCPKG_ROOT environment variable is empty)")
+    endif()
+    if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+        set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            CACHE STRING "")
+        include(${CMAKE_TOOLCHAIN_FILE})
+    endif()
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(VCPKG_BUILDCONF_DIR "$ENV{VCPKG_ROOT}/installed/x64-windows/debug")
+    else()
+        set(VCPKG_BUILDCONF_DIR "$ENV{VCPKG_ROOT}/installed/x64-windows")
+    endif()
 endif()
 
 set(REL_DEFS          "-DNDEBUG")
@@ -39,6 +55,7 @@ if (WIN32)
     endif()
 endif()
 
+#add_subdirectory(launch-pad-gtk)
 add_subdirectory(launch-pad-qt)
 
 if (MSVC)

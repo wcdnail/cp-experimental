@@ -71,7 +71,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QOpenGLWidget" name="sceneView"/>
+        <widget class="MainView" name="sceneView" />
        </item>
       </layout>
      </widget>
@@ -192,6 +192,11 @@
    <class>LogBox</class>
    <extends>QPlainTextEdit</extends>
    <header>logbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MainView</class>
+   <extends>QOpenGLWidget</extends>
+   <header>viewmain.h</header>
   </customwidget>
  </customwidgets>
  <resources>
