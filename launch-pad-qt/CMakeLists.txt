@@ -5,7 +5,6 @@ include("../cmake/misc.cmake")
 
 project(launch-pad-qt)
 
-set(CMAKE_CXX_STANDARD 17)
 set(BOOST_DIRECTLY_REQUIRED_LIBRARIES filesystem system)
 
 find_package(OpenGL REQUIRED QUIET)
@@ -46,7 +45,6 @@ list(REMOVE_DUPLICATES ALL_C_DEFS)
 list(REMOVE_DUPLICATES ALL_INC_DIRS)
 list(REMOVE_DUPLICATES ALL_LIB_DIRS)
 list(REMOVE_DUPLICATES ALL_LIBS)
-include_directories(${ALL_INC_DIRS})
 
 file(GLOB_RECURSE CXX_SRCS *.cpp)
 file(GLOB_RECURSE C_SRCS *.c)
@@ -94,6 +92,12 @@ list(APPEND COMMON_SOURCES
 _PRE_ADD_PCH(SOURCES stdafx.h stdafx.cpp)
 add_executable(${PROJECT_NAME} ${COMMON_SOURCES})
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
 if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
     set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
