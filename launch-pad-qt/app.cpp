@@ -14,5 +14,6 @@ TheApp::~TheApp()
 int TheApp::run()
 {
     winMain_->show();
+    throw std::bad_alloc();
     return exec();
 }
