@@ -7,10 +7,13 @@ project(launch-pad-qt)
 
 set(BOOST_DIRECTLY_REQUIRED_LIBRARIES filesystem system)
 
-find_package(OpenGL REQUIRED QUIET)
+if (UNIX)
+    set(OpenGL_GL_PREFERENCE "GLVND")
+endif()
+find_package(OpenGL REQUIRED)
 list(APPEND ALL_LIBS ${OPENGL_LIBRARIES})
 
-find_package(Freetype 2.4.9 REQUIRED QUIET)
+find_package(Freetype 2.4.9 REQUIRED)
 list(APPEND ALL_INC_DIRS ${FREETYPE_INCLUDE_DIRS})
 list(APPEND ALL_LIBS ${FREETYPE_LIBRARIES})
 
@@ -18,7 +21,7 @@ find_package(GLEW REQUIRED)
 list(APPEND ALL_INC_DIRS ${GLEW_INCLUDE_DIR})
 list(APPEND ALL_LIBS ${GLEW_LIBRARY})
 
-find_package(Qt5 COMPONENTS Core Widgets Multimedia OpenGL Concurrent Network REQUIRED QUIET)
+find_package(Qt5 COMPONENTS Core Widgets Multimedia OpenGL Concurrent Network REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if (Qt5_POSITION_INDEPENDENT_CODE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -37,7 +40,7 @@ if (("${Qt5_VERSION}" VERSION_EQUAL "5.4") OR ("${Qt5_VERSION}" VERSION_GREATER 
     add_definitions(-DUSE_QOPENGLWIDGET)
 endif()
 
-find_package(Boost 1.36 REQUIRED COMPONENTS ${BOOST_DIRECTLY_REQUIRED_LIBRARIES} QUIET)
+find_package(Boost REQUIRED COMPONENTS ${BOOST_DIRECTLY_REQUIRED_LIBRARIES})
 list(APPEND ALL_INC_DIRS ${Boost_INCLUDE_DIRS})
 list(APPEND ALL_LIBS ${Boost_LIBRARIES})
 
@@ -89,20 +92,29 @@ list(APPEND COMMON_SOURCES
     ${OS_SPEC_SRCS}
 )
 
-_PRE_ADD_PCH(SOURCES stdafx.h stdafx.cpp)
+if (MSVC)
+    _PRE_ADD_PCH(SOURCES stdafx.h stdafx.cpp)
+endif()
+
 add_executable(${PROJECT_NAME} ${COMMON_SOURCES})
-target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS YES
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${VCPKG_PREFIX_PATH}/include
+    )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${ALL_LIBS})
+
 if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
     set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
 else()
-   _POST_ADD_PCH(stdafx.h stdafx.cpp)
+    #_POST_ADD_PCH(stdafx.h stdafx.cpp)
 endif(MSVC)
 
 if (WIN32)
@@ -134,3 +146,4 @@ message(STATUS "Glew include dir     : ${GLEW_INCLUDE_DIR}")
 message(STATUS "Glew library         : ${GLEW_LIBRARY}")
 message(STATUS "Qt5                  : ${Qt5_VERSION}")
 message(STATUS "# -----------------------------------------------------------------")
+

@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include "strmanip.h"
+#include <ctype.h>
 
 const gchar* strFirstNotSpace(const gchar *start, gsize *len)
 {

@@ -2,6 +2,7 @@
 #include <epoxy/gl.h>
 #include "loadstl.h"
 #include "logbox.h"
+#include <errno.h>
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -73,7 +74,7 @@ static const gchar* astl_parser_state_str(gint state)
     return (NULL);
 }
 
-static gsize skipTailSpecials(gchar *arg, gssize len)
+static gsize skipTailSpecials(gchar *arg, gsize len)
 {
     gchar *tail = arg + len;
     while ((tail > arg) && (*tail < ' ')) {
@@ -83,7 +84,7 @@ static gsize skipTailSpecials(gchar *arg, gssize len)
     return ((gsize)tail - (gsize)arg);
 }
 
-static gboolean astlCheckToken(gchar *token, gssize len, const gchar *lexeme, gsize lexsize, gint resState, gint *state, gchar **arg, gsize *arglen)
+static gboolean astlCheckToken(gchar *token, gsize len, const gchar *lexeme, gsize lexsize, gint resState, gint *state, gchar **arg, gsize *arglen)
 {
     if (0 != g_ascii_strncasecmp(token, lexeme, lexsize)) {
         return (FALSE);
@@ -101,7 +102,7 @@ static gboolean astlCheckToken(gchar *token, gssize len, const gchar *lexeme, gs
     return (TRUE);
 }
 
-static gint astlGetParserState(gchar *line, gssize len, gchar **arg, gsize *arglen)
+static gint astlGetParserState(gchar *line, gsize len, gchar **arg, gsize *arglen)
 {
     gint  state = _ASTL_INVALID;
     char *token = NULL;
@@ -155,7 +156,7 @@ static PGMesh stlLoadAsc(const gchar *pathname, GInputStream *istm)
     const gchar *parseErrorMsg = "invalid parser state";
     GError              *error = NULL;
     PGMesh              result = NULL;
-    gssize              readed = 0;
+    gsize               readed = 0;
     GDataInputStream    *idata = NULL;
     gchar                *line = NULL;
     guint              lineNum = 1;
@@ -262,7 +263,6 @@ parserError:
             prevState = state;
         }
         ++lineNum;
-        readed = 0;
         line = g_data_input_stream_read_line(idata, &readed, NULL, &error);
     }
     while (readed > 0);

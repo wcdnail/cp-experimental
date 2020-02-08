@@ -33,7 +33,7 @@ typedef struct _AppSettingsClass AppSettingsClass;
 #define APPSETTINGS_TYPE_OBJECT  (app_settings_get_type())
 #define APPSETTINGS_OBJECT(obj)  (G_TYPE_CHECK_INSTANCE_CAST((obj), APPSETTINGS_TYPE_OBJECT, AppSettings))
 
-G_DEFINE_TYPE(AppSettings, app_settings, G_TYPE_OBJECT);
+G_DEFINE_TYPE(AppSettings, app_settings, G_TYPE_OBJECT)
 
 //---------------------------------------------------------------------------------------------------------------------
 

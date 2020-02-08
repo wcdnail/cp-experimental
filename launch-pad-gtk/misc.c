@@ -14,7 +14,7 @@ typedef struct _GRectClass GRectClass;
 #define GRECT_TYPE_OBJECT                (grect_get_type())
 #define GRECT_OBJECT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), GRECT_TYPE_OBJECT, GRect))
 
-G_DEFINE_TYPE(GRect, grect, G_TYPE_OBJECT);
+G_DEFINE_TYPE(GRect, grect, G_TYPE_OBJECT)
 
 static void grect_set_property(GObject *gobject, guint prop_id, const GValue *value, GParamSpec *pspec)
 {

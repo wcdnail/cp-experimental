@@ -3,6 +3,7 @@
 #include "mainview.h"
 #include "logbox.h"
 #include "loadstl.h"
+#include <errno.h>
 
 static PGScene currentScene = NULL;
 
@@ -141,7 +142,7 @@ gboolean modelView_OnEvent(GtkGLArea *ctl, GdkEvent *event, gpointer user)
     case GDK_2BUTTON_PRESS:
     case GDK_3BUTTON_PRESS:
         if (currentScene) {
-            gint btn;
+            guint btn;
             gdk_event_get_button(event, &btn);
             gdk_event_get_coords(event, &gx, &gy);
             currentScene->isRotating = btn == 3;

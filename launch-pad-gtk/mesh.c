@@ -2,6 +2,7 @@
 #include <epoxy/gl.h>
 #include "mesh.h"
 #include "logbox.h"
+#include <errno.h>
 
 gboolean vertexFromString(PGVertex vertex, gchar *str, gsize len)
 {

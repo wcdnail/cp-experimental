@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include "filemanip.h"
 #include "logbox.h"
+#include <errno.h>
 
 guchar* fileRead(const gchar *pathname, gssize *readed)
 {

@@ -10,7 +10,7 @@ struct _GLaunchPad
     GtkApplication super;
 };
 
-G_DEFINE_TYPE(GLaunchPad, glaunch_pad, GTK_TYPE_APPLICATION);
+G_DEFINE_TYPE(GLaunchPad, glaunch_pad, GTK_TYPE_APPLICATION)
 
 static void glaunch_pad_activate(GApplication *app);
 static void glaunch_pad_open(GApplication *app, GFile **files, gint n_files, const gchar *hint);

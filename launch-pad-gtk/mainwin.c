@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 // GTK Class 
 
-G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW);
+G_DEFINE_TYPE(GMainWin, gmain_win, GTK_TYPE_APPLICATION_WINDOW)
 
 static void mainwin_OnRealize(GMainWin *win, gpointer user);
 static void mainwin_OnDispose(GObject *gobject);

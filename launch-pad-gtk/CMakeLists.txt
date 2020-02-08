@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.0)
 
 project(launch-pad-gtk)
 
-option(USE_GSCHEMA "Compile & install GSettings schema" ON)
+option(USE_GSCHEMA "Compile & install GSettings schema" OFF)
 
 if (MSVC)
     set(GLIB_TOOLS_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/tools/glib/")
+    set(GLIB_RES_COMPILER "${GLIB_TOOLS_PATH}glib-compile-resources")
+    set(GLIB_SCH_COMPILER "${GLIB_TOOLS_PATH}glib-compile-schemas")
     list(APPEND ALL_INC_DIRS 
         "$ENV{VCPKG_ROOT}/installed/x64-windows/include"
     )
@@ -45,7 +47,12 @@ else()
         ${JSONGLIB_LIBRARIES}
         ${EPOXY_LIBRARIES}
     )
-    add_definitions(-D_USING_GLIB_JSON)
+    list(APPEND MY_C_FLAGS 
+        -D_USING_GLIB_JSON
+        -Wpedantic
+    )
+    set(GLIB_RES_COMPILER glib-compile-resources)
+    set(GLIB_SCH_COMPILER glib-compile-schemas)
 endif()
 
 list(REMOVE_DUPLICATES ALL_C_DEFS)
@@ -63,13 +70,13 @@ set(RESOURCES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ui 
     ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad-menu.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/sm-star.png
-    ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.ico
+    ${CMAKE_CURRENT_SOURCE_DIR}/../pixmaps/sm-star.png
+    ${CMAKE_CURRENT_SOURCE_DIR}/../pixmaps/launch-pad.ico
     ${CMAKE_CURRENT_SOURCE_DIR}/../resources/initial-scene.stl
 )
 add_custom_command(
     OUTPUT "${RESOURCES_PN}"
-    COMMAND ${GLIB_TOOLS_PATH}glib-compile-resources
+    COMMAND ${GLIB_RES_COMPILER}
     ARGS ${CMAKE_CURRENT_SOURCE_DIR}/launch-pad.gresource.xml 
          --target=${RESOURCES_PN} 
          --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} 
@@ -83,7 +90,7 @@ if (USE_GSCHEMA)
     set(SCHEMA_PN "${SCHEMA_BD}/${SCHEMA_CT}")
     add_custom_command(
         OUTPUT "${SCHEMA_PN}"
-        COMMAND ${GLIB_TOOLS_PATH}glib-compile-schemas
+        COMMAND ${GLIB_SCH_COMPILER}
         ARGS --strict
              --targetdir=${SCHEMA_BD}/
              ${CMAKE_CURRENT_SOURCE_DIR}/.
@@ -116,6 +123,10 @@ add_executable(${PROJECT_NAME}
     ${C_SRCS}
     ${CXX_SRCS}
     ${OS_SPEC_SRCS}
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+    ${MY_C_FLAGS}
 )
 
 target_link_libraries(${PROJECT_NAME} ${ALL_LIBS})
