@@ -1,26 +1,27 @@
 # CP experimental
-## Windows DevEnv setup (GTK:VCPKG)
+## Windows DevEnv setup (VCPKG)
 ```
 git clone https://github.com/Microsoft/vcpkg
 cd vcpkg
 .\bootstrap-vcpkg.bat
-vcpkg install gtk:x64-windows
 ```
-## Windows DevEnv setup (QT:VCPKG)
+## Windows DevEnv setup (GTK & QT:VCPKG)
 ```
-vcpkg install qt5:x64-windows
-vcpkg install qscintilla:x64-windows
-vcpkg install cgal:x64-windows
-vcpkg install mpfr:x64-windows
-vcpkg install boost:x64-windows
-vcpkg install opencsg:x64-windows
-vcpkg install glew:x64-windows
-vcpkg install fontconfig:x64-windows
-vcpkg install harfbuzz:x64-windows
-vcpkg install libzip:x64-windows
-vcpkg install double-conversion:x64-windows
-vcpkg install eigen3:x64-windows
-vcpkg install libxml2:x64-windows
+vcpkg install ^
+gtk:x64-windows ^
+qt5:x64-windows ^
+qscintilla:x64-windows ^
+cgal:x64-windows ^
+mpfr:x64-windows ^
+boost:x64-windows ^
+opencsg:x64-windows ^
+glew:x64-windows ^
+fontconfig:x64-windows ^
+harfbuzz:x64-windows ^
+libzip:x64-windows ^
+double-conversion:x64-windows ^
+eigen3:x64-windows ^
+libxml2:x64-windows
 ```
 ## Windows build (MSYS)
  - git cmake <a target="_blank" href="http://repo.msys2.org/distrib/">msys</a>
