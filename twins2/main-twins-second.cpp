@@ -6,8 +6,12 @@
 
 int main(int argc, const char *argv[], const char *envp[])
 {
+    namespace fs = std::filesystem;
+
     try {
-        std::filesystem::directory_iterator it;
+        for (auto& p : fs::directory_iterator("/")) {
+            std::cout << p.path() << '\n';
+        }
     }
     catch(std::exception &ex) {
         std::cerr << "ERROR: " << ex.what() << std::endl;
