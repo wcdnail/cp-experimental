@@ -110,7 +110,7 @@ static gint astlGetParserState(gchar *line, gsize len, gchar **arg, gsize *argle
         return _ASTL_SKIP_LINE;
     }
     token = line;
-    while (*token && *token == ' ') {
+    while (*token == ' ') {
         ++token;
     }
     switch(g_ascii_tolower(*token)) {
@@ -122,10 +122,10 @@ static gint astlGetParserState(gchar *line, gsize len, gchar **arg, gsize *argle
             if (astlCheckToken(token + 3, len - 3, "facet", 5, _ASTL_END_FACET, &state, NULL, NULL)) {
                 return state;
             }
-            else if (astlCheckToken(token + 3, len - 3, "loop", 4, _ASTL_END_OUTER_LOOP, &state, NULL, NULL)) {
+            if (astlCheckToken(token + 3, len - 3, "loop", 4, _ASTL_END_OUTER_LOOP, &state, NULL, NULL)) {
                 return state;
             }
-            else if (astlCheckToken(token + 3, len - 3, "solid", 5, _ASTL_END_FILE, &state, NULL, NULL)) {
+            if (astlCheckToken(token + 3, len - 3, "solid", 5, _ASTL_END_FILE, &state, NULL, NULL)) {
                 return state;
             }
         }

@@ -16,51 +16,35 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         CACHE STRING "")
     include(${CMAKE_TOOLCHAIN_FILE})
 endif()
-if (WIN32)
-    set(VCPKG_TRIPLET "x64-windows")
-else()
-    set(VCPKG_TRIPLET "x64-linux")
-endif()
-set(VCPKG_PREFIX_PATH "$ENV{VCPKG_ROOT}/installed/${VCPKG_TRIPLET}")
+
+set(VCPKG_PREFIX_PATH "$ENV{VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(VCPKG_BUILDCONF_DIR "${VCPKG_PREFIX_PATH}/debug")
 else()
     set(VCPKG_BUILDCONF_DIR "${VCPKG_PREFIX_PATH}")
 endif()
 
-set(REL_DEFS          "-DNDEBUG")
-set(DBG_DEFS          "-D_DEBUG")
-set(MSVC_CFLAGS       "/wd4047")
-set(GNU_CFLAGS        "-Wno-incompatible-pointer-types \
--Wno-int-to-pointer-cast \
--Wno-pointer-to-int-cast \
-")
-
-set(MSVC_OPT_CFLAGS   "${CMAKE_C_FLAGS_RELEASE}")
-set(GNU_OPT_CFLAGS    "-Os -Ofast ${REL_DEFS}")
-set(OPT_CFLAGS        "${${CMAKE_C_COMPILER_ID}_OPT_CFLAGS}")
-
-set(Debug_CFLAGS      "${CMAKE_C_FLAGS_DEBUG} ${DBG_DEFS}")
-set(Release_CFLAGS    "${OPT_CFLAGS}")
-set(MinSizeRel_CFLAGS "${OPT_CFLAGS}")
-
-set(CONF_CFLAGS       "${${CMAKE_BUILD_TYPE}_CFLAGS}")
-set(COMPILER_CFLAGS   "${${CMAKE_C_COMPILER_ID}_CFLAGS}")
-set(CMAKE_C_FLAGS     "${ALL_DEFS} ${CONF_CFLAGS} ${COMPILER_CFLAGS}")
-set(CMAKE_CXX_FLAGS   "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS}")
-
 if (WIN32)
-    add_definitions(-D_UNICODE)
-    add_definitions(-DUNICODE)
-    add_definitions(-D_WIN32)
+    add_definitions(-D_UNICODE
+        -DUNICODE
+        -D_WIN32
+    )
     if(MSVC)
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     endif()
 endif()
 
-add_subdirectory(launch-pad-gtk)
-add_subdirectory(launch-pad-qt)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-D_DEBUG)
+else()
+    add_definitions(-DNDEBUG)
+endif()
+
+#add_subdirectory(launch-pad-gtk)
+#add_subdirectory(launch-pad-qt)
+add_subdirectory(twins2)
 
 if (MSVC)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT launch-pad-qt)
 endif()
+

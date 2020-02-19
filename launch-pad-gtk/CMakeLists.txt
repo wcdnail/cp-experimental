@@ -55,6 +55,12 @@ else()
     set(GLIB_SCH_COMPILER glib-compile-schemas)
 endif()
 
+list(APPEND MY_C_FLAGS
+    -Wno-incompatible-pointer-types
+    -Wno-int-to-pointer-cast
+    -Wno-pointer-to-int-cast
+)
+
 list(REMOVE_DUPLICATES ALL_C_DEFS)
 list(REMOVE_DUPLICATES ALL_INC_DIRS)
 list(REMOVE_DUPLICATES ALL_LIB_DIRS)

@@ -5,6 +5,7 @@
 
 LogBox::LogBox(QWidget *parent) 
     : QPlainTextEdit(parent)
+    , Ui_LogBox()
 {
 	setupUi(this);
     connect(this->actionClear, SIGNAL(triggered()), this, SLOT(onClearConsole()));
