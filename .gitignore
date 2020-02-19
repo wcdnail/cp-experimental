@@ -1,3 +1,5 @@
 build/
 build-vc/
+build-gcc-*/
+build-clang-*/
 .vscode/c_cpp_properties.json
