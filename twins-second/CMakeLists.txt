@@ -15,7 +15,7 @@ set(UI_WRAP )
 set(MOC_SRCS )
 set(OS_SPEC_SRCS )
 
-set(BOOST_DIRECTLY_REQUIRED_LIBRARIES filesystem system)
+set(BOOST_DIRECTLY_REQUIRED_LIBRARIES system)
 
 find_package(Qt5 COMPONENTS Core Widgets Concurrent Network REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -29,12 +29,6 @@ list(APPEND ALL_LIBS
     Qt5::Concurrent
     Qt5::Network
 )
-
-if (("${Qt5_VERSION}" VERSION_EQUAL "5.4") OR ("${Qt5_VERSION}" VERSION_GREATER "5.4"))
-    set(QT_DEFS
-	-DUSE_QOPENGLWIDGET
-    )
-endif()
 
 find_package(Boost REQUIRED COMPONENTS ${BOOST_DIRECTLY_REQUIRED_LIBRARIES})
 list(APPEND ALL_INC_DIRS ${Boost_INCLUDE_DIRS})
@@ -76,6 +70,8 @@ list(APPEND COMMON_SOURCES
     ${OS_SPEC_SRCS}
 )
 
+set(VCPKG_APPLOCAL_DEPS OFF)
+
 add_executable(${PROJECT_NAME} ${COMMON_SOURCES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -90,6 +86,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     ${ALL_LIBS}
+    cmutual
 )
 
 if (MSVC)

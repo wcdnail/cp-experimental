@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.0)
 
 project(cp-experimental)
 
+option(BUILD_SHARED_LIBS "Make libs SHARED" ON)
+if (BUILD_SHARED_LIBS)
+    set(LIB_STATIC_SHARED SHARED)   
+    add_definitions(-D_MAKE_LIBS_SHARED)
+else()
+    set(LIB_STATIC_SHARED STATIC)
+    add_definitions(-D_MAKE_LIBS_STATIC)
+endif()
+
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Usage: cmake -DCMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo|MinSizeRel]")
   message(FATAL_ERROR "CMAKE_BUILD_TYPE not specified")
@@ -40,11 +49,12 @@ else()
     add_definitions(-DNDEBUG)
 endif()
 
+add_subdirectory(cmutual)
 #add_subdirectory(launch-pad-gtk)
 #add_subdirectory(launch-pad-qt)
-add_subdirectory(twins2)
+add_subdirectory(twins-second)
 
+set(STARTUP_PROJ twins-second)
 if (MSVC)
-    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT launch-pad-qt)
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${STARTUP_PROJ})
 endif()
-
